@@ -1,16 +1,15 @@
-import { PersonNode } from "../interfaces";
+import { Node, Relationship } from "neo4j-driver";
 
-export const convertNeoToVis = (personList: PersonNode[]) => {
-  const nodes = personList.map((p, i) => ({
-    id: i + 1,
-    label: p["name"],
-    title: p["name"],
+export const convertNeoToVis = (nodesNeo: Node[], edgesNeo: Relationship[]) => {
+  const nodes = nodesNeo.map((n) => ({
+    id: n.elementId,
+    label: n.properties?.name,
+    title: n.properties?.name,
   }));
 
-  const edges = nodes.map((node, i) => ({
-    from: 1,
-    to: node.id,
-    label: i % 2 ? "a" : "b",
+  const edges = edgesNeo.map((r) => ({
+    from: r.startNodeElementId,
+    to: r.endNodeElementId,
   }));
 
   const graph = {

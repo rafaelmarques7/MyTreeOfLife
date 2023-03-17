@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from "react";
-import neo4j from "neo4j-driver";
+import neo4j, { Node, Relationship } from "neo4j-driver";
 import { Box, Flex } from "@chakra-ui/react";
 import { mockNodeArray } from "./__mocks__/neo4j";
 import { env } from "./env";
 import { PersonList } from "./components/PeopleList";
-import { createPerson, getPersonList } from "./utils/dbFunctions";
+import {
+  createPerson,
+  getPersonList,
+  getRelationshipList,
+} from "./utils/dbFunctions";
 import { Header } from "./components/Header";
 import { GraphCustom } from "./components/GraphCustom";
-import { NewPersonForm } from "./components/NewPersonForm";
+import { FormCustom } from "./components/FormCustom";
 import { convertNeoToVis } from "./utils/graphLib";
+import { NewRelationshipForm } from "./components/NewRelationshipForm";
 
 const driver = neo4j.driver(
   env.REACT_APP_NEO_CONN_STRING,
@@ -16,24 +21,25 @@ const driver = neo4j.driver(
 );
 
 function App() {
-  console.log("rendering app");
-
-  const [personList, setPersonList] = useState<any>([]);
+  const [personList, setPersonList] = useState<Node[]>([]);
+  const [relationshipList, setRelationShipList] = useState<Relationship[]>([]);
   const [newPersonName, setNewPersonName] = useState("");
+
+  const dataGraph = convertNeoToVis(personList, relationshipList);
+
+  console.log("rendering app", { personList, relationshipList, dataGraph });
 
   useEffect(() => {
     async function loadInitialData() {
-      const result = await getPersonList(driver);
-      if (result) {
-        setPersonList(result.records.map((r) => r.get("person")?.properties));
-      }
+      setPersonList(await getPersonList(driver));
+      setRelationShipList(await getRelationshipList(driver));
     }
 
     if (env.REACT_APP_USE_NEO_DB) {
       loadInitialData();
     } else {
       console.log("initialising graph with mock data");
-      setPersonList(mockNodeArray);
+      // setPersonList(mockNodeArray);
     }
   }, []);
 
@@ -42,27 +48,28 @@ function App() {
 
     await createPerson(driver, newPersonName);
     setNewPersonName("");
-    const result = await getPersonList(driver);
-    if (result) {
-      setPersonList(result.records.map((r) => r?.get("person")?.properties));
-    }
+    setPersonList(await getPersonList(driver));
   };
-
-  const dataGraph = convertNeoToVis(personList);
 
   return (
     <Flex direction={"column"}>
       <Header />
       <GraphCustom data={dataGraph} />
-      <NewPersonForm
-        newPersonName={newPersonName}
-        setNewPersonName={setNewPersonName}
-        handleButtonClick={handleButtonClick}
+      <FormCustom
+        label="Create new person"
+        value={newPersonName}
+        setValue={setNewPersonName}
+        onSubmit={handleButtonClick}
       />
 
-      <Box mt="10">
-        <PersonList data={personList} />
-      </Box>
+      <NewRelationshipForm
+        nodes={personList}
+        onSubmit={(node) => {
+          console.log(node);
+        }}
+      />
+
+      <Box mt="10">{/* <PersonList data={personList} /> */}</Box>
     </Flex>
   );
 }
