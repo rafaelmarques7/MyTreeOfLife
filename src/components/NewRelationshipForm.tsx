@@ -1,17 +1,22 @@
 import { Button, Container, Select, Text } from "@chakra-ui/react";
-import { Node } from "neo4j-driver";
+import { Node, Relationship } from "neo4j-driver";
 import { useState } from "react";
-import { FormCustom } from "./FormCustom";
+import { DropdownWithFreeText } from "./DropdownWithFreeText";
 
 interface Props {
   nodes: Node[];
-  onSubmit?: (node) => void;
+  relationshipList: Relationship[];
+  onSubmit: (from, to, relationship) => void;
 }
 
-export const NewRelationshipForm: React.FC<Props> = ({ nodes, onSubmit }) => {
+export const NewRelationshipForm: React.FC<Props> = ({
+  nodes,
+  relationshipList,
+  onSubmit,
+}) => {
   const [from, setFrom] = useState<Node>();
   const [to, setTo] = useState<Node>();
-  const [relationship, setRelationship] = useState("");
+  const [relationship, setRelationship] = useState<string>("");
 
   const handleFromSubmit = (event) => {
     const elementId = event.target.value;
@@ -25,10 +30,6 @@ export const NewRelationshipForm: React.FC<Props> = ({ nodes, onSubmit }) => {
     const elementId = event.target.value;
     const node = nodes.filter((n) => n.elementId === elementId)[0];
     setTo(node);
-  };
-
-  const onCreate = () => {
-    console.log({ from, to, relationship });
   };
 
   return (
@@ -46,13 +47,17 @@ export const NewRelationshipForm: React.FC<Props> = ({ nodes, onSubmit }) => {
         value={to?.properties?.name}
         onChange={handleToSubmit}
       />
-      <FormCustom
+      <DropdownWithFreeText
         label="Relationship Type"
-        value={relationship}
-        setValue={setRelationship}
-        onSubmit={() => {}}
+        relationshipList={relationshipList}
+        value={relationship ? relationship : ""}
+        setValue={(s) => setRelationship(s)}
       />
-      <Button>Create!</Button>
+      {from && to && relationship ? (
+        <Button onClick={() => onSubmit(from, to, relationship)}>
+          Create!
+        </Button>
+      ) : null}
     </Container>
   );
 };

@@ -45,3 +45,33 @@ export const createPerson = async (driver: Driver, personName: string) => {
     session.close();
   }
 };
+
+export const createRelationship = async (
+  driver: Driver,
+  from: Node,
+  to: Node,
+  relationship: string
+) => {
+  const session = driver.session();
+
+  const vars = {
+    labelFrom: from.labels[0],
+    nameFrom: from.properties?.name,
+    labelTo: to.labels[0],
+    nameTo: to.properties?.name,
+    relType: relationship,
+  };
+
+  const query = `MATCH (p:${vars.labelFrom} {name: '${vars.nameFrom}'}), (m:${vars.labelTo} {name: '${vars.nameTo}'}) CREATE (p)-[:${vars.relType}]->(m)`;
+
+  try {
+    console.log("running query, ", query);
+    const result = await session.run(query);
+    // const createdNode = result.records[0].get("p").properties;
+    console.log("relationship created");
+  } catch (error) {
+    console.error("Error creating node", error);
+  } finally {
+    session.close();
+  }
+};

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import neo4j, { Node, Relationship } from "neo4j-driver";
 import { Box, Flex } from "@chakra-ui/react";
-import { mockNodeArray } from "./__mocks__/neo4j";
+// import { mockPersonList, mockRelationshipList } from "./__mocks__/neo4j";
 import { env } from "./env";
 import { PersonList } from "./components/PeopleList";
 import {
   createPerson,
+  createRelationship,
   getPersonList,
   getRelationshipList,
 } from "./utils/dbFunctions";
@@ -39,7 +40,8 @@ function App() {
       loadInitialData();
     } else {
       console.log("initialising graph with mock data");
-      // setPersonList(mockNodeArray);
+      // setPersonList(mockPersonList);
+      // setRelationShipList(mockRelationshipList);
     }
   }, []);
 
@@ -49,6 +51,13 @@ function App() {
     await createPerson(driver, newPersonName);
     setNewPersonName("");
     setPersonList(await getPersonList(driver));
+  };
+
+  const onCreateNewRelationship = async (from, to, relationship) => {
+    console.log("new relationship button was clicked", newPersonName);
+
+    await createRelationship(driver, from, to, relationship);
+    setRelationShipList(await getRelationshipList(driver));
   };
 
   return (
@@ -64,9 +73,10 @@ function App() {
 
       <NewRelationshipForm
         nodes={personList}
-        onSubmit={(node) => {
-          console.log(node);
-        }}
+        relationshipList={relationshipList}
+        onSubmit={(from, to, relationship) =>
+          onCreateNewRelationship(from, to, relationship)
+        }
       />
 
       <Box mt="10">{/* <PersonList data={personList} /> */}</Box>
