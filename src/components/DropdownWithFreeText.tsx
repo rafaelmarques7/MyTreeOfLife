@@ -4,14 +4,12 @@ import { Relationship } from "neo4j-driver";
 
 interface Props {
   label: string;
-  relationshipList: Relationship[];
-  value: Relationship | string;
+  labelArray: Set<string>;
   setValue: (s: string) => void;
 }
 export const DropdownWithFreeText: React.FC<Props> = ({
   label,
-  relationshipList,
-  value,
+  labelArray,
   setValue,
 }) => {
   const [selectedValue, setSelectedValue] = useState(label);
@@ -31,16 +29,13 @@ export const DropdownWithFreeText: React.FC<Props> = ({
     setValue(event.target.value);
   };
 
-  const labels = relationshipList.map((r) => r.type);
-  const uniqueLabel = new Set(labels);
-
   let options = [
     <option key={`dropdown-relationship-other`} value="Other">
       Enter your own
     </option>,
   ];
 
-  uniqueLabel.forEach((label) =>
+  labelArray.forEach((label) =>
     options.push(
       <option key={`dropdown-relationship-${label}`} value={label}>
         {label}

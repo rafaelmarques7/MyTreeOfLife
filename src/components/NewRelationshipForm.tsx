@@ -18,6 +18,9 @@ export const NewRelationshipForm: React.FC<Props> = ({
   const [to, setTo] = useState<Node>();
   const [relationship, setRelationship] = useState<string>("");
 
+  const labels = relationshipList.map((r) => r.type);
+  const uniqueLabels = new Set(labels);
+
   const handleFromSubmit = (event) => {
     const elementId = event.target.value;
     const node = nodes.filter((n) => n.elementId === elementId)[0];
@@ -49,8 +52,7 @@ export const NewRelationshipForm: React.FC<Props> = ({
       />
       <DropdownWithFreeText
         label="Relationship Type"
-        relationshipList={relationshipList}
-        value={relationship ? relationship : ""}
+        labelArray={uniqueLabels}
         setValue={(s) => setRelationship(s)}
       />
       {from && to && relationship ? (

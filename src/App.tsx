@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from "react";
 import neo4j, { Node, Relationship } from "neo4j-driver";
-import { Box, Flex } from "@chakra-ui/react";
+import { Box, Container, Flex } from "@chakra-ui/react";
 // import { mockPersonList, mockRelationshipList } from "./__mocks__/neo4j";
 import { env } from "./env";
-import { PersonList } from "./components/PeopleList";
 import {
-  createPerson,
+  createNode,
   createRelationship,
-  getPersonList,
+  deleteNode,
+  getNodeList,
   getRelationshipList,
 } from "./utils/dbFunctions";
 import { Header } from "./components/Header";
-import { GraphCustom } from "./components/GraphCustom";
-import { FormCustom } from "./components/FormCustom";
 import { convertNeoToVis } from "./utils/graphLib";
 import { NewRelationshipForm } from "./components/NewRelationshipForm";
+import { PersonList } from "./components/PeopleList";
+import { NewNode } from "./components/NewNode";
+import { NetworkGraph } from "./components/MyGraph";
 
 const driver = neo4j.driver(
   env.REACT_APP_NEO_CONN_STRING,
@@ -24,7 +25,6 @@ const driver = neo4j.driver(
 function App() {
   const [personList, setPersonList] = useState<Node[]>([]);
   const [relationshipList, setRelationShipList] = useState<Relationship[]>([]);
-  const [newPersonName, setNewPersonName] = useState("");
 
   const dataGraph = convertNeoToVis(personList, relationshipList);
 
@@ -32,7 +32,7 @@ function App() {
 
   useEffect(() => {
     async function loadInitialData() {
-      setPersonList(await getPersonList(driver));
+      setPersonList(await getNodeList(driver));
       setRelationShipList(await getRelationshipList(driver));
     }
 
@@ -45,31 +45,42 @@ function App() {
     }
   }, []);
 
-  const handleButtonClick = async () => {
-    console.log("create person was clicked", newPersonName);
+  const onCreateNewNode = async (nodeName, nodeLabel) => {
+    console.log("create node was clicked", nodeName, nodeName);
 
-    await createPerson(driver, newPersonName);
-    setNewPersonName("");
-    setPersonList(await getPersonList(driver));
+    await createNode(driver, nodeName, nodeLabel);
+    setPersonList(await getNodeList(driver)); // force refresh
   };
 
   const onCreateNewRelationship = async (from, to, relationship) => {
-    console.log("new relationship button was clicked", newPersonName);
+    console.log("new relationship button was clicked", from, to, relationship);
 
     await createRelationship(driver, from, to, relationship);
-    setRelationShipList(await getRelationshipList(driver));
+    setRelationShipList(await getRelationshipList(driver)); // force refresh
+  };
+
+  const onDeleteNode = async (index) => {
+    console.log("delete", index);
+    const node = personList[index];
+
+    await deleteNode(driver, node);
+
+    setPersonList(await getNodeList(driver)); // force refresh
   };
 
   return (
     <Flex direction={"column"}>
       <Header />
-      <GraphCustom data={dataGraph} />
-      <FormCustom
-        label="Create new person"
-        value={newPersonName}
-        setValue={setNewPersonName}
-        onSubmit={handleButtonClick}
+
+      <NetworkGraph data={dataGraph} />
+
+      <NewNode
+        onSubmit={onCreateNewNode}
+        //@ts-ignore
+        nodes={personList}
       />
+
+      <Box m={2}></Box>
 
       <NewRelationshipForm
         nodes={personList}
@@ -79,7 +90,9 @@ function App() {
         }
       />
 
-      <Box mt="10">{/* <PersonList data={personList} /> */}</Box>
+      <Box mt="10">
+        <PersonList data={personList} onDelete={onDeleteNode} />
+      </Box>
     </Flex>
   );
 }

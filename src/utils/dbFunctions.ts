@@ -1,6 +1,6 @@
 import { Driver, Node, Relationship } from "neo4j-driver-core";
 
-export const getPersonList = async (driver) => {
+export const getNodeList = async (driver) => {
   const query = "MATCH (n) RETURN n";
   const result = await dbQuery(driver, query);
   const data: Node[] = result?.records.map((r) => r.get("n")) || [];
@@ -28,22 +28,9 @@ const dbQuery = async (driver: Driver, query) => {
   }
 };
 
-// @TODO: possible refactor
-export const createPerson = async (driver: Driver, personName: string) => {
-  const session = driver.session();
-
-  try {
-    const result = await session.run(
-      "CREATE (p:Person {name: $name}) RETURN p",
-      { name: personName }
-    );
-    const createdNode = result.records[0].get("p").properties;
-    console.log("person was created: ", createdNode);
-  } catch (error) {
-    console.error("Error creating node", error);
-  } finally {
-    session.close();
-  }
+export const createNode = async (driver: Driver, nodeName, nodeLabel) => {
+  const query = `CREATE (n:${nodeLabel} {name: '${nodeName}'}) RETURN n`;
+  dbQuery(driver, query);
 };
 
 export const createRelationship = async (
@@ -52,8 +39,6 @@ export const createRelationship = async (
   to: Node,
   relationship: string
 ) => {
-  const session = driver.session();
-
   const vars = {
     labelFrom: from.labels[0],
     nameFrom: from.properties?.name,
@@ -63,15 +48,10 @@ export const createRelationship = async (
   };
 
   const query = `MATCH (p:${vars.labelFrom} {name: '${vars.nameFrom}'}), (m:${vars.labelTo} {name: '${vars.nameTo}'}) CREATE (p)-[:${vars.relType}]->(m)`;
+  dbQuery(driver, query);
+};
 
-  try {
-    console.log("running query, ", query);
-    const result = await session.run(query);
-    // const createdNode = result.records[0].get("p").properties;
-    console.log("relationship created");
-  } catch (error) {
-    console.error("Error creating node", error);
-  } finally {
-    session.close();
-  }
+export const deleteNode = async (driver: Driver, node: Node) => {
+  const query = `Match (p:${node.labels[0]} {name: '${node.properties.name}'}) Detach Delete p`;
+  dbQuery(driver, query);
 };

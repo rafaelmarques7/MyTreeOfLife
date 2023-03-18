@@ -10,6 +10,7 @@ export const convertNeoToVis = (nodesNeo: Node[], edgesNeo: Relationship[]) => {
   const edges = edgesNeo.map((r) => ({
     from: r.startNodeElementId,
     to: r.endNodeElementId,
+    label: r.type,
   }));
 
   const graph = {

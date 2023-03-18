@@ -21,19 +21,17 @@ export const FormCustom: React.FC<Props> = ({
   };
 
   return (
-    <Container maxW="xl">
-      <FormControl>
-        <Flex alignItems="center">
-          <Input
-            placeholder={label}
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-            fontWeight="semibold"
-            mr={2}
-          />
-        </Flex>
-      </FormControl>
-    </Container>
+    <FormControl>
+      <Flex alignItems="center">
+        <Input
+          placeholder={label}
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          fontWeight="semibold"
+          mr={2}
+        />
+      </Flex>
+    </FormControl>
   );
 };
