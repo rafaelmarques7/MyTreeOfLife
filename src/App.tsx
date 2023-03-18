@@ -11,11 +11,11 @@ import {
   getRelationshipList,
 } from "./utils/dbFunctions";
 import { Header } from "./components/Header";
-import { convertNeoToVis } from "./utils/graphLib";
+import { convertNeoToVis, nodesToString } from "./utils/graphLib";
 import { NewRelationshipForm } from "./components/NewRelationshipForm";
-import { PersonList } from "./components/PeopleList";
 import { NewNode } from "./components/NewNode";
 import { NetworkGraph } from "./components/MyGraph";
+import { ListWithDelete } from "./components/ListWithDelete";
 
 const driver = neo4j.driver(
   env.REACT_APP_NEO_CONN_STRING,
@@ -91,7 +91,11 @@ function App() {
       />
 
       <Box mt="10">
-        <PersonList data={personList} onDelete={onDeleteNode} />
+        <ListWithDelete
+          listLabels={nodesToString(personList)}
+          onDelete={onDeleteNode}
+        />
+        {/* <ListWithDelete data={relationshipList} onDelete={onDeleteNode} /> */}
       </Box>
     </Flex>
   );

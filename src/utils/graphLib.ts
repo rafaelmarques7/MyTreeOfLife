@@ -21,3 +21,10 @@ export const convertNeoToVis = (nodesNeo: Node[], edgesNeo: Relationship[]) => {
 
   return graph;
 };
+
+export const nodeToString = (node: Node) => {
+  return `(${node.labels[0]}): ${node.properties?.name} `;
+};
+
+export const nodesToString = (nodes: Node[]) =>
+  nodes.map((n) => nodeToString(n));
