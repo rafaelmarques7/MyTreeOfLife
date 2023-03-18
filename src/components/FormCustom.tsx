@@ -1,4 +1,4 @@
-import { Container, Flex, FormControl, Input } from "@chakra-ui/react";
+import { Flex, FormControl, Input } from "@chakra-ui/react";
 import { Dispatch, SetStateAction } from "react";
 
 interface Props {
@@ -22,8 +22,9 @@ export const FormCustom: React.FC<Props> = ({
 
   return (
     <FormControl>
-      <Flex alignItems="center">
+      <Flex alignItems="center" maxW={"509px"}>
         <Input
+          sx={{ "&::placeholder": { color: "Black", fontWeight: "lg" } }}
           placeholder={label}
           value={value}
           onChange={(e) => setValue(e.target.value)}

@@ -1,15 +1,8 @@
-import {
-  Button,
-  Container,
-  Flex,
-  FormControl,
-  Input,
-  Text,
-} from "@chakra-ui/react";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Button, Container, Text } from "@chakra-ui/react";
+import { useState } from "react";
 import { FormCustom } from "./FormCustom";
 import { DropdownWithFreeText } from "./DropdownWithFreeText";
-import { Node, Relationship } from "neo4j-driver";
+import { Node } from "neo4j-driver";
 
 interface Props {
   onSubmit: (name: string, label: string) => void;
@@ -25,7 +18,7 @@ export const NewNode: React.FC<Props> = ({ onSubmit, nodes }) => {
 
   return (
     <Container maxW="xl">
-      <Text>Create new Node</Text>
+      <Text fontWeight={"bold"}>Create a new Node:</Text>
 
       <FormCustom
         label="Node name"

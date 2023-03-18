@@ -37,7 +37,7 @@ export const NewRelationshipForm: React.FC<Props> = ({
 
   return (
     <Container maxW="xl">
-      <Text>Create new Relationship</Text>
+      <Text fontWeight={"bold"}>Create a new Relationship:</Text>
       <DropdownNodes
         label={from ? from?.properties?.name : "From"}
         nodes={nodes}
@@ -66,7 +66,12 @@ export const NewRelationshipForm: React.FC<Props> = ({
 
 const DropdownNodes = ({ label, nodes, value, onChange }) => {
   return (
-    <Select placeholder={label} value={value} onChange={onChange}>
+    <Select
+      maxW={"500px"}
+      placeholder={label}
+      value={value}
+      onChange={onChange}
+    >
       {nodes.map((node) => {
         const label = node.properties?.name;
         return (

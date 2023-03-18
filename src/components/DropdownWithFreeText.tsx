@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Select, Input, Flex, FormControl } from "@chakra-ui/react";
-import { Relationship } from "neo4j-driver";
 
 interface Props {
   label: string;
@@ -45,7 +44,7 @@ export const DropdownWithFreeText: React.FC<Props> = ({
 
   return (
     <FormControl>
-      <Flex>
+      <Flex maxW={"500px"}>
         <Select
           placeholder={label}
           value={selectedValue}

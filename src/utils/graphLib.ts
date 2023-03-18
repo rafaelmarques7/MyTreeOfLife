@@ -5,6 +5,7 @@ export const convertNeoToVis = (nodesNeo: Node[], edgesNeo: Relationship[]) => {
     id: n.elementId,
     label: n.properties?.name,
     title: n.properties?.name,
+    // group: n.properties?.name?.match(/r /i) ? 1 : 2,
   }));
 
   const edges = edgesNeo.map((r) => ({
