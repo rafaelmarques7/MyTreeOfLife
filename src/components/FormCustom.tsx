@@ -24,12 +24,12 @@ export const FormCustom: React.FC<Props> = ({
     <FormControl>
       <Flex alignItems="center" maxW={"509px"}>
         <Input
-          sx={{ "&::placeholder": { color: "Black", fontWeight: "lg" } }}
+          // sx={{ "&::placeholder": { color: "Black", fontWeight: "lg" } }}
           placeholder={label}
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleKeyDown}
-          fontWeight="semibold"
+          // fontWeight="semibold"
           mr={2}
         />
       </Flex>

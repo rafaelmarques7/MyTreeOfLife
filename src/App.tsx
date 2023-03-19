@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import neo4j, { Node, Relationship } from "neo4j-driver";
-import { Box, Container, Flex } from "@chakra-ui/react";
+import { Box, Button, Container, Flex } from "@chakra-ui/react";
 // import { mockPersonList, mockRelationshipList } from "./__mocks__/neo4j";
 import { env } from "./env";
 import {
+  createNewNodes,
   createNode,
   createRelationship,
   deleteNode,
@@ -21,6 +22,8 @@ import { NewRelationshipForm } from "./components/NewRelationshipForm";
 import { NewNode } from "./components/NewNode";
 import { NetworkGraph } from "./components/MyGraph";
 import { ListWithDelete } from "./components/ListWithDelete";
+import { DeleteButtonWithModal } from "./components/DeleteButtonWithModal";
+import { ButtonNewNode } from "./components/ButtonNewNode";
 
 const driver = neo4j.driver(
   env.REACT_APP_NEO_CONN_STRING,
@@ -54,6 +57,13 @@ function App() {
     console.log("create node was clicked", nodeName, nodeName);
 
     await createNode(driver, nodeName, nodeLabel);
+    setNodeList(await getNodeList(driver)); // force refresh
+  };
+
+  const onCreateNodes = async (nodeNames: string[], nodeLabel: string) => {
+    console.log("create nodes was clicked", nodeNames, nodeLabel);
+
+    await createNewNodes(driver, nodeNames, nodeLabel);
     setNodeList(await getNodeList(driver)); // force refresh
   };
 
@@ -93,6 +103,9 @@ function App() {
       <Header />
       <Flex bg="gray.200">
         <NetworkGraph data={dataGraph} />
+        <Flex position="absolute" top={"7vh"} right={1}>
+          <ButtonNewNode nodes={nodeList} onSubmit={onCreateNodes} />
+        </Flex>
       </Flex>
     </Flex>
   );

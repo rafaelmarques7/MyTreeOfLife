@@ -34,6 +34,15 @@ export const createNode = async (driver: Driver, nodeName, nodeLabel) => {
   dbQuery(driver, query);
 };
 
+
+export const createNewNodes = async (driver: Driver, nodeNames: string[], label: string) => {
+  const nodes = nodeNames.map(name => `(:${label} {name: '${name}'})`);
+  const query = `CREATE ${nodes.join(', ')}`;
+  dbQuery(driver, query);
+};
+
+
+
 export const createRelationship = async (
   driver: Driver,
   from: Node,
