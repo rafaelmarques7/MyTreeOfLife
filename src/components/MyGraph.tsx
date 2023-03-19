@@ -7,7 +7,7 @@ interface PropsNetworkGraph {
   onNodeClick?: (params) => void;
 }
 
-export const NetworkGraph: React.FC<PropsNetworkGraph> = ({
+const MyGraph: React.FC<PropsNetworkGraph> = ({
   data,
   onNodeClick = () => {},
 }) => {
@@ -25,7 +25,10 @@ export const NetworkGraph: React.FC<PropsNetworkGraph> = ({
     network?.on("click", function (params) {
       onNodeClick(params);
     });
-  }, [container, nodes, edges, options]);
+    // the line below makes the network re-render only when array sizes change
+  }, [nodes.length, edges.length]);
 
   return <div ref={container} style={{ height: "93vh", width: "100vh" }} />;
 };
+
+export const NetworkGraph = React.memo(MyGraph);

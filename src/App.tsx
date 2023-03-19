@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import neo4j, { Node, Relationship } from "neo4j-driver";
 import { Box, Button, Container, Flex, Text } from "@chakra-ui/react";
 // import { mockPersonList, mockRelationshipList } from "./__mocks__/neo4j";
@@ -43,6 +43,11 @@ function App() {
   const [selectionLabel, setSelectionLabel] = useState<LabelInfo>();
 
   const dataGraph = convertNeoToVis(nodeList, relationshipList);
+
+  // const dataGraph = useMemo(() => {
+  //   const data = convertNeoToVis(nodeList, relationshipList);
+  //   return data;
+  // }, [nodeList, relationshipList]);
 
   console.log("rendering app", {
     nodeList,
@@ -102,7 +107,7 @@ function App() {
     }
   };
 
-  const onDeleteSelection = () => {
+  const onDeleteSelection = async () => {
     console.log("onDeleteSelection");
 
     if (selectionType === "node") {
@@ -126,6 +131,9 @@ function App() {
 
       deleteRelationship(driver, relationship, nodeFrom, nodeTo);
     }
+
+    setNodeList(await getNodeList(driver)); // force refresh
+    setRelationShipList(await getRelationshipList(driver)); // force refresh
   };
 
   return (
