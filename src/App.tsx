@@ -91,37 +91,9 @@ function App() {
   return (
     <Flex direction={"column"}>
       <Header />
-
-      <NetworkGraph data={dataGraph} />
-
-      <NewNode
-        onSubmit={onCreateNewNode}
-        //@ts-ignore
-        nodes={nodeList}
-      />
-
-      <Box m={2}></Box>
-
-      <NewRelationshipForm
-        nodes={nodeList}
-        relationshipList={relationshipList}
-        onSubmit={(from, to, relationship) =>
-          onCreateNewRelationship(from, to, relationship)
-        }
-      />
-
-      <Box mt="10">
-        <ListWithDelete
-          title="Nodes:"
-          listLabels={getNodesLabels(nodeList)}
-          onDelete={onDeleteNode}
-        />
-        <ListWithDelete
-          title="Relationships:"
-          listLabels={getRelationshionLabels(relationshipList, nodeList)}
-          onDelete={onDeleteRelationship}
-        />
-      </Box>
+      <Flex bg="gray.200">
+        <NetworkGraph data={dataGraph} />
+      </Flex>
     </Flex>
   );
 }

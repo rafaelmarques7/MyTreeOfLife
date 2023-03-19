@@ -13,5 +13,5 @@ export const NetworkGraph = ({ data }) => {
       new Network(container.current, { nodes, edges }, options);
   }, [container, nodes, edges]);
 
-  return <div ref={container} style={{ height: "700px", width: "900px" }} />;
+  return <div ref={container} style={{ height: "93vh", width: "100vh" }} />;
 };
