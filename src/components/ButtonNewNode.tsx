@@ -127,7 +127,7 @@ export const FormNewNode: React.FC<PropsFormNewNode> = ({
       {nodeNames.length > 0 ? (
         <Flex direction={"column"} pt={10} pl={1}>
           <DropdownWithFreeText
-            label="Label (optional)"
+            label="Label"
             labelArray={labels}
             setValue={(s) => onSetLabel(s)}
           />

@@ -45,8 +45,6 @@ export const createNewNodes = async (driver: Driver, nodeNames: string[], label:
   dbQuery(driver, query);
 };
 
-
-
 export const createRelationship = async (
   driver: Driver,
   from: Node,

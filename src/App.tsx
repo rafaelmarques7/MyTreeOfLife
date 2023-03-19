@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import neo4j, { Node, Relationship } from "neo4j-driver";
 import { Box, Button, Container, Flex, Text } from "@chakra-ui/react";
 // import { mockPersonList, mockRelationshipList } from "./__mocks__/neo4j";
@@ -27,6 +27,8 @@ import { ListWithDelete } from "./components/ListWithDelete";
 import { DeleteButtonWithModal } from "./components/DeleteButtonWithModal";
 import { ButtonNewNode } from "./components/ButtonNewNode";
 import { LabelInfo } from "./interfaces";
+import { useDispatch, useSelector } from "react-redux";
+import { addNode } from "./state/reducers";
 
 const driver = neo4j.driver(
   env.REACT_APP_NEO_CONN_STRING,
@@ -34,13 +36,17 @@ const driver = neo4j.driver(
 );
 
 function App() {
-  const [nodeList, setNodeList] = useState<Node[]>([]);
+  // @ts-ignore
+  const nodeList = useSelector((state) => state?.nodeList);
+
+  // const [nodeList, setNodeList] = useState<Node[]>([]);
   const [relationshipList, setRelationShipList] = useState<Relationship[]>([]);
 
-  // set current selection of node or edge
-  // takes an elementId
-  const [selectionType, setSelectionType] = useState("");
+  const [selectionType, setSelectionType] = useState(""); // takes an elementId
   const [selectionLabel, setSelectionLabel] = useState<LabelInfo>();
+
+  // const [selectionList, setSelectionList] = useState<LabelInfo[]>([]);
+  const [selectionList, setSelectionList] = useState<LabelInfo[]>([]);
 
   const dataGraph = convertNeoToVis(nodeList, relationshipList);
 
@@ -55,11 +61,12 @@ function App() {
     dataGraph,
     selectionType,
     selectionLabel,
+    selectionlist: selectionList,
   });
 
   useEffect(() => {
     async function loadInitialData() {
-      setNodeList(await getNodeList(driver));
+      // setNodeList(await getNodeList(driver));
       setRelationShipList(await getRelationshipList(driver));
     }
 
@@ -72,15 +79,19 @@ function App() {
     }
   }, []);
 
+  const dispatch = useDispatch();
   const onCreateNodes = async (nodeNames: string[], nodeLabel: string) => {
     console.log("create nodes was clicked", nodeNames, nodeLabel);
 
-    await createNewNodes(driver, nodeNames, nodeLabel);
-    setNodeList(await getNodeList(driver)); // force refresh
+    // @ts-ignore
+    dispatch(addNode(driver, nodeNames, nodeLabel));
+
+    // await createNewNodes(driver, nodeNames, nodeLabel);
+    // setNodeList(await getNodeList(driver)); // force refresh
   };
 
   const onGraphClick = (params) => {
-    console.log("onGraphClick", params);
+    console.log("onGraphClick", params, selectionList);
 
     const nodeId = params?.nodes[0];
     if (nodeId) {
@@ -89,6 +100,14 @@ function App() {
 
       setSelectionLabel(label);
       setSelectionType("node");
+
+      // add node if it does not exist in yet ,but remove node if it does
+      const nodeExists =
+        selectionList.filter((i) => i.elementId === label.elementId).length > 0;
+      console.log(nodeExists);
+      if (!nodeExists) {
+        setSelectionList((prevSelectionList) => [...prevSelectionList, label]); // use functional update form
+      }
     }
 
     const edgeId = params?.edges[0];
@@ -104,6 +123,7 @@ function App() {
 
       setSelectionLabel(label);
       setSelectionType("edge");
+      setSelectionList((prevSelectionList) => [...prevSelectionList, label]); // use functional update form
     }
   };
 
@@ -132,7 +152,7 @@ function App() {
       deleteRelationship(driver, relationship, nodeFrom, nodeTo);
     }
 
-    setNodeList(await getNodeList(driver)); // force refresh
+    // setNodeList(await getNodeList(driver)); // force refresh
     setRelationShipList(await getRelationshipList(driver)); // force refresh
   };
 
@@ -144,7 +164,11 @@ function App() {
 
         <Flex position="absolute" top={"7vh"} right={1} direction="column">
           <Flex alignItems={"center"}>
-            <Text>{`Selection: ${selectionLabel?.label}`}</Text>
+            {/* <Text>{`Selection: ${selectionLabel?.label}`}</Text> */}
+            <Text>{`Selection List: ${selectionList
+              .map((i) => i.label)
+              .join(", ")}`}</Text>
+
             <DeleteButtonWithModal
               onDelete={onDeleteSelection}
               modalBody={`Are you sure you want to delete ${selectionLabel?.label}? `}

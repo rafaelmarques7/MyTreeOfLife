@@ -7,6 +7,7 @@ export const convertNeoToVis = (nodesNeo: Node[], edgesNeo: Relationship[]): Gra
     label: n.properties?.name,
     title: n.properties?.name,
     // group: n.properties?.name?.match(/r /i) ? 1 : 2,
+    // we can set `color` here
   }));
 
   const edges: EdgeGraphData[] = edgesNeo.map((r) => ({
