@@ -12,15 +12,15 @@ import {
 } from "@chakra-ui/react";
 
 interface Props {
-  onDelete: (index: number) => void;
-  index: number;
+  onDelete?: (index: number) => void;
+  index?: number;
   modalTitle?: string;
   modalBody?: string;
 }
 
 export const DeleteButtonWithModal: React.FC<Props> = ({
-  onDelete,
-  index,
+  onDelete = () => {},
+  index = 0,
   modalTitle = "Delete Item",
   modalBody = "Are you sure you want to delete this item?",
 }) => {

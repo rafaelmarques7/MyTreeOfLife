@@ -30,12 +30,16 @@ const dbQuery = async (driver: Driver, query) => {
 };
 
 export const createNode = async (driver: Driver, nodeName, nodeLabel) => {
+  console.log('createNode', nodeName, nodeLabel)
+
   const query = `CREATE (n:${nodeLabel} {name: '${nodeName}'}) RETURN n`;
   dbQuery(driver, query);
 };
 
 
 export const createNewNodes = async (driver: Driver, nodeNames: string[], label: string) => {
+  console.log('createNewNodes', nodeNames, label)
+
   const nodes = nodeNames.map(name => `(:${label} {name: '${name}'})`);
   const query = `CREATE ${nodes.join(', ')}`;
   dbQuery(driver, query);
@@ -62,7 +66,8 @@ export const createRelationship = async (
 };
 
 export const deleteNode = async (driver: Driver, node: Node) => {
-  console.log(node);
+  console.log('deleteNode', node);
+
   const query = `Match (p:${node.labels[0]} {name: '${node.properties.name}'}) Detach Delete p`;
   dbQuery(driver, query);
 };
@@ -73,6 +78,8 @@ export const deleteRelationship = async (
   nodeFrom: Node,
   nodeTo: Node
 ) => {
+  console.log('deleteRelationship', relationship, nodeFrom, nodeTo)
+
   const query = `
     MATCH (p {name: '${nodeFrom.properties?.name}'})-[r:${relationship.type}]->(s {name: '${nodeTo.properties?.name}'})
     DELETE r`;

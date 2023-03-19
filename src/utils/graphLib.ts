@@ -1,21 +1,21 @@
 import { Node, Relationship } from "neo4j-driver";
-import { LabelInfo } from "../interfaces";
+import { EdgeGraphData, GraphData, LabelInfo, NodeGraphData } from "../interfaces";
 
-export const convertNeoToVis = (nodesNeo: Node[], edgesNeo: Relationship[]) => {
-  const nodes = nodesNeo.map((n) => ({
+export const convertNeoToVis = (nodesNeo: Node[], edgesNeo: Relationship[]): GraphData => {
+  const nodes: NodeGraphData[] = nodesNeo.map((n) => ({
     id: n.elementId,
     label: n.properties?.name,
     title: n.properties?.name,
     // group: n.properties?.name?.match(/r /i) ? 1 : 2,
   }));
 
-  const edges = edgesNeo.map((r) => ({
+  const edges: EdgeGraphData[] = edgesNeo.map((r) => ({
     from: r.startNodeElementId,
     to: r.endNodeElementId,
     label: r.type,
   }));
 
-  const graph = {
+  const graph: GraphData = {
     nodes,
     edges,
   };
@@ -42,7 +42,7 @@ export function getNodesLabels(nodes: Node[], sort = true): LabelInfo[] {
   return labels;
 }
 
-function getRelationshionLabel(rel: Relationship, nodes: Node[]): LabelInfo {
+export function getRelationshionLabel(rel: Relationship, nodes: Node[]): LabelInfo {
   const type = rel.type;
   let [from, to] = ["", ""];
   nodes.forEach((n) => {
@@ -56,7 +56,7 @@ function getRelationshionLabel(rel: Relationship, nodes: Node[]): LabelInfo {
   });
 
   return {
-    label: `${from} -> ${type} -> ${to}`,
+    label: `${from} -> [${type}] -> ${to}`,
     elementId: rel.elementId,
   };
 }

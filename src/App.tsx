@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import neo4j, { Node, Relationship } from "neo4j-driver";
-import { Box, Button, Container, Flex } from "@chakra-ui/react";
+import { Box, Button, Container, Flex, Text } from "@chakra-ui/react";
 // import { mockPersonList, mockRelationshipList } from "./__mocks__/neo4j";
 import { env } from "./env";
 import {
@@ -15,7 +15,9 @@ import {
 import { Header } from "./components/Header";
 import {
   convertNeoToVis,
+  getNodeLabel,
   getNodesLabels,
+  getRelationshionLabel,
   getRelationshionLabels,
 } from "./utils/graphLib";
 import { NewRelationshipForm } from "./components/NewRelationshipForm";
@@ -24,6 +26,7 @@ import { NetworkGraph } from "./components/MyGraph";
 import { ListWithDelete } from "./components/ListWithDelete";
 import { DeleteButtonWithModal } from "./components/DeleteButtonWithModal";
 import { ButtonNewNode } from "./components/ButtonNewNode";
+import { LabelInfo } from "./interfaces";
 
 const driver = neo4j.driver(
   env.REACT_APP_NEO_CONN_STRING,
@@ -34,9 +37,20 @@ function App() {
   const [nodeList, setNodeList] = useState<Node[]>([]);
   const [relationshipList, setRelationShipList] = useState<Relationship[]>([]);
 
+  // set current selection of node or edge
+  // takes an elementId
+  const [selectionType, setSelectionType] = useState("");
+  const [selectionLabel, setSelectionLabel] = useState<LabelInfo>();
+
   const dataGraph = convertNeoToVis(nodeList, relationshipList);
 
-  console.log("rendering app", { nodeList, relationshipList, dataGraph });
+  console.log("rendering app", {
+    nodeList,
+    relationshipList,
+    dataGraph,
+    selectionType,
+    selectionLabel,
+  });
 
   useEffect(() => {
     async function loadInitialData() {
@@ -53,13 +67,6 @@ function App() {
     }
   }, []);
 
-  const onCreateNewNode = async (nodeName, nodeLabel) => {
-    console.log("create node was clicked", nodeName, nodeName);
-
-    await createNode(driver, nodeName, nodeLabel);
-    setNodeList(await getNodeList(driver)); // force refresh
-  };
-
   const onCreateNodes = async (nodeNames: string[], nodeLabel: string) => {
     console.log("create nodes was clicked", nodeNames, nodeLabel);
 
@@ -67,43 +74,74 @@ function App() {
     setNodeList(await getNodeList(driver)); // force refresh
   };
 
-  const onCreateNewRelationship = async (from, to, relationship) => {
-    console.log("new relationship button was clicked", from, to, relationship);
+  const onGraphClick = (params) => {
+    console.log("onGraphClick", params);
 
-    await createRelationship(driver, from, to, relationship);
-    setRelationShipList(await getRelationshipList(driver)); // force refresh
+    const nodeId = params?.nodes[0];
+    if (nodeId) {
+      const node = nodeList.filter((n) => n.elementId === nodeId)[0];
+      const label = getNodeLabel(node);
+
+      setSelectionLabel(label);
+      setSelectionType("node");
+    }
+
+    const edgeId = params?.edges[0];
+    if (edgeId) {
+      const edge = dataGraph.edges.filter((n) => n?.id === edgeId)[0];
+      const relationship = relationshipList.filter(
+        (r) =>
+          r.startNodeElementId === edge.from &&
+          r.endNodeElementId === edge.to &&
+          r.type === edge.label
+      )[0];
+      const label = getRelationshionLabel(relationship, nodeList);
+
+      setSelectionLabel(label);
+      setSelectionType("edge");
+    }
   };
 
-  const onDeleteNode = async (elementId: string) => {
-    const matchingNodes = nodeList.filter((n) => n.elementId === elementId);
-    await deleteNode(driver, matchingNodes[0]);
+  const onDeleteSelection = () => {
+    console.log("onDeleteSelection");
 
-    setNodeList(await getNodeList(driver)); // force refresh
-  };
+    if (selectionType === "node") {
+      const node = nodeList.filter(
+        (n) => n.elementId === selectionLabel?.elementId
+      )[0];
 
-  const onDeleteRelationship = async (elementId: string) => {
-    console.log("delete relationship", elementId);
-    const matchingRel = relationshipList.filter(
-      (r) => r.elementId === elementId
-    );
-    const rel = matchingRel[0];
-    const matchingFrom = nodeList.filter(
-      (n) => n.elementId === rel.startNodeElementId
-    );
-    const matchingTo = nodeList.filter(
-      (n) => n.elementId === rel.endNodeElementId
-    );
+      deleteNode(driver, node);
+    }
 
-    await deleteRelationship(driver, rel, matchingFrom[0], matchingTo[0]);
-    setRelationShipList(await getRelationshipList(driver)); // force refresh
+    if (selectionType === "edge") {
+      const relationship = relationshipList.filter(
+        (n) => n?.elementId === selectionLabel?.elementId
+      )[0];
+      const nodeFrom = nodeList.filter(
+        (n) => n.elementId === relationship.startNodeElementId
+      )[0];
+      const nodeTo = nodeList.filter(
+        (n) => n.elementId === relationship.endNodeElementId
+      )[0];
+
+      deleteRelationship(driver, relationship, nodeFrom, nodeTo);
+    }
   };
 
   return (
     <Flex direction={"column"}>
       <Header />
       <Flex bg="gray.200">
-        <NetworkGraph data={dataGraph} />
-        <Flex position="absolute" top={"7vh"} right={1}>
+        <NetworkGraph data={dataGraph} onNodeClick={onGraphClick} />
+
+        <Flex position="absolute" top={"7vh"} right={1} direction="column">
+          <Flex alignItems={"center"}>
+            <Text>{`Selection: ${selectionLabel?.label}`}</Text>
+            <DeleteButtonWithModal
+              onDelete={onDeleteSelection}
+              modalBody={`Are you sure you want to delete ${selectionLabel?.label}?`}
+            />
+          </Flex>
           <ButtonNewNode nodes={nodeList} onSubmit={onCreateNodes} />
         </Flex>
       </Flex>
