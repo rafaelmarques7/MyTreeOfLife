@@ -1,7 +1,9 @@
 import { Button, Container, Select, Text } from "@chakra-ui/react";
 import { Node, Relationship } from "neo4j-driver";
 import { useState } from "react";
+import { nodeToString, sortList } from "../utils/graphLib";
 import { DropdownWithFreeText } from "./DropdownWithFreeText";
+import { v4 as uuidv4 } from "uuid";
 
 interface Props {
   nodes: Node[];
@@ -18,8 +20,9 @@ export const NewRelationshipForm: React.FC<Props> = ({
   const [to, setTo] = useState<Node>();
   const [relationship, setRelationship] = useState<string>("");
 
-  const labels = relationshipList.map((r) => r.type);
-  const uniqueLabels = new Set(labels);
+  const allLabels = relationshipList.map((r) => r.type);
+  const uniqueLabels = new Set(allLabels);
+  const labels = sortList(Array.from(uniqueLabels));
 
   const handleFromSubmit = (event) => {
     const elementId = event.target.value;
@@ -52,7 +55,7 @@ export const NewRelationshipForm: React.FC<Props> = ({
       />
       <DropdownWithFreeText
         label="Relationship Type"
-        labelArray={uniqueLabels}
+        labelArray={labels}
         setValue={(s) => setRelationship(s)}
       />
       {from && to && relationship ? (
@@ -73,12 +76,8 @@ const DropdownNodes = ({ label, nodes, value, onChange }) => {
       onChange={onChange}
     >
       {nodes.map((node) => {
-        const label = node.properties?.name;
-        return (
-          <option key={`dropdown-${label}`} value={node.elementId}>
-            {label}
-          </option>
-        );
+        const label = nodeToString(node);
+        return <option key={uuidv4()}>{label}</option>;
       })}
     </Select>
   );

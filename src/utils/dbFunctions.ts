@@ -20,6 +20,7 @@ const dbQuery = async (driver: Driver, query) => {
   try {
     console.log("making query to db: ", query);
     const res = await session.run(query);
+    console.log("res: ", res);
     return res;
   } catch (error) {
     console.error("Error executing query", error);
@@ -52,6 +53,19 @@ export const createRelationship = async (
 };
 
 export const deleteNode = async (driver: Driver, node: Node) => {
+  console.log(node);
   const query = `Match (p:${node.labels[0]} {name: '${node.properties.name}'}) Detach Delete p`;
+  dbQuery(driver, query);
+};
+
+export const deleteRelationship = async (
+  driver: Driver,
+  relationship: Relationship,
+  nodeFrom: Node,
+  nodeTo: Node
+) => {
+  const query = `
+    MATCH (p {name: '${nodeFrom.properties?.name}'})-[r:${relationship.type}]->(s {name: '${nodeTo.properties?.name}'})
+    DELETE r`;
   dbQuery(driver, query);
 };

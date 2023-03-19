@@ -7,11 +7,16 @@ import {
   createNode,
   createRelationship,
   deleteNode,
+  deleteRelationship,
   getNodeList,
   getRelationshipList,
 } from "./utils/dbFunctions";
 import { Header } from "./components/Header";
-import { convertNeoToVis, nodesToString } from "./utils/graphLib";
+import {
+  convertNeoToVis,
+  getNodesLabels,
+  getRelationshionLabels,
+} from "./utils/graphLib";
 import { NewRelationshipForm } from "./components/NewRelationshipForm";
 import { NewNode } from "./components/NewNode";
 import { NetworkGraph } from "./components/MyGraph";
@@ -23,16 +28,16 @@ const driver = neo4j.driver(
 );
 
 function App() {
-  const [personList, setPersonList] = useState<Node[]>([]);
+  const [nodeList, setNodeList] = useState<Node[]>([]);
   const [relationshipList, setRelationShipList] = useState<Relationship[]>([]);
 
-  const dataGraph = convertNeoToVis(personList, relationshipList);
+  const dataGraph = convertNeoToVis(nodeList, relationshipList);
 
-  console.log("rendering app", { personList, relationshipList, dataGraph });
+  console.log("rendering app", { nodeList, relationshipList, dataGraph });
 
   useEffect(() => {
     async function loadInitialData() {
-      setPersonList(await getNodeList(driver));
+      setNodeList(await getNodeList(driver));
       setRelationShipList(await getRelationshipList(driver));
     }
 
@@ -40,7 +45,7 @@ function App() {
       loadInitialData();
     } else {
       console.log("initialising graph with mock data");
-      // setPersonList(mockPersonList);
+      // setNodeList(mockPersonList);
       // setRelationShipList(mockRelationshipList);
     }
   }, []);
@@ -49,7 +54,7 @@ function App() {
     console.log("create node was clicked", nodeName, nodeName);
 
     await createNode(driver, nodeName, nodeLabel);
-    setPersonList(await getNodeList(driver)); // force refresh
+    setNodeList(await getNodeList(driver)); // force refresh
   };
 
   const onCreateNewRelationship = async (from, to, relationship) => {
@@ -59,13 +64,28 @@ function App() {
     setRelationShipList(await getRelationshipList(driver)); // force refresh
   };
 
-  const onDeleteNode = async (index) => {
-    console.log("delete", index);
-    const node = personList[index];
+  const onDeleteNode = async (elementId: string) => {
+    const matchingNodes = nodeList.filter((n) => n.elementId === elementId);
+    await deleteNode(driver, matchingNodes[0]);
 
-    await deleteNode(driver, node);
+    setNodeList(await getNodeList(driver)); // force refresh
+  };
 
-    setPersonList(await getNodeList(driver)); // force refresh
+  const onDeleteRelationship = async (elementId: string) => {
+    console.log("delete relationship", elementId);
+    const matchingRel = relationshipList.filter(
+      (r) => r.elementId === elementId
+    );
+    const rel = matchingRel[0];
+    const matchingFrom = nodeList.filter(
+      (n) => n.elementId === rel.startNodeElementId
+    );
+    const matchingTo = nodeList.filter(
+      (n) => n.elementId === rel.endNodeElementId
+    );
+
+    await deleteRelationship(driver, rel, matchingFrom[0], matchingTo[0]);
+    setRelationShipList(await getRelationshipList(driver)); // force refresh
   };
 
   return (
@@ -77,13 +97,13 @@ function App() {
       <NewNode
         onSubmit={onCreateNewNode}
         //@ts-ignore
-        nodes={personList}
+        nodes={nodeList}
       />
 
       <Box m={2}></Box>
 
       <NewRelationshipForm
-        nodes={personList}
+        nodes={nodeList}
         relationshipList={relationshipList}
         onSubmit={(from, to, relationship) =>
           onCreateNewRelationship(from, to, relationship)
@@ -92,10 +112,15 @@ function App() {
 
       <Box mt="10">
         <ListWithDelete
-          listLabels={nodesToString(personList)}
+          title="Nodes:"
+          listLabels={getNodesLabels(nodeList)}
           onDelete={onDeleteNode}
         />
-        {/* <ListWithDelete data={relationshipList} onDelete={onDeleteNode} /> */}
+        <ListWithDelete
+          title="Relationships:"
+          listLabels={getRelationshionLabels(relationshipList, nodeList)}
+          onDelete={onDeleteRelationship}
+        />
       </Box>
     </Flex>
   );

@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Select, Input, Flex, FormControl } from "@chakra-ui/react";
+import { v4 as uuidv4 } from "uuid";
 
 interface Props {
   label: string;
-  labelArray: Set<string>;
+  labelArray: string[];
   setValue: (s: string) => void;
 }
 export const DropdownWithFreeText: React.FC<Props> = ({
@@ -29,14 +30,14 @@ export const DropdownWithFreeText: React.FC<Props> = ({
   };
 
   let options = [
-    <option key={`dropdown-relationship-other`} value="Other">
+    <option key={uuidv4()} value="Other">
       Enter your own
     </option>,
   ];
 
   labelArray.forEach((label) =>
     options.push(
-      <option key={`dropdown-relationship-${label}`} value={label}>
+      <option key={uuidv4()} value={label}>
         {label}
       </option>
     )
