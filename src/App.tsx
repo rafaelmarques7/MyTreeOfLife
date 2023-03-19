@@ -139,7 +139,7 @@ function App() {
             <Text>{`Selection: ${selectionLabel?.label}`}</Text>
             <DeleteButtonWithModal
               onDelete={onDeleteSelection}
-              modalBody={`Are you sure you want to delete ${selectionLabel?.label}?`}
+              modalBody={`Are you sure you want to delete ${selectionLabel?.label}? `}
             />
           </Flex>
           <ButtonNewNode nodes={nodeList} onSubmit={onCreateNodes} />
