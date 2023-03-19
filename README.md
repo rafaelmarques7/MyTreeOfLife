@@ -1,5 +1,7 @@
 # React App for Graph DB with CRUD and visualizations
 
+> Website is live: http://mytol.s3-website-eu-west-1.amazonaws.com/
+
 This app uses a Neo4j Graph database, and allows the user to manipulate the database using commands input through the UI, built in React.
 
 <img src="./public/ui.png" alt="alt text" width="600"/>
