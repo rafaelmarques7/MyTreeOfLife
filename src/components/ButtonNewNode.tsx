@@ -17,7 +17,6 @@ import { FormCustom } from "./FormCustom";
 import { DropdownWithFreeText } from "./DropdownWithFreeText";
 import { Node } from "neo4j-driver";
 import { sortList } from "../utils/graphLib";
-import { ListWithDelete } from "./ListWithDelete";
 
 interface Props {
   nodes: Node[];
@@ -85,24 +84,20 @@ export const FormNewNode: React.FC<PropsFormNewNode> = ({
 }) => {
   const [nodeNames, setNodesNames] = useState<string[]>([]);
   const [label, setLabel] = useState("");
-  console.log({ nodeNames, label });
 
   const allLabels = nodes.map((node) => node.labels[0]);
   const uniqueLabels = new Set(allLabels);
   const labels = sortList(Array.from(uniqueLabels));
 
   const onAddNode = (name) => {
-    console.log("onAddNode", name);
     setNodesNames([...nodeNames, name]);
   };
 
   const onNodeDelete = (index) => {
-    console.log("onDelete", index);
     setNodesNames(nodeNames.filter((_, i) => i !== index));
   };
 
   const onSetLabel = (label: string) => {
-    console.log("onSetLabel", label);
     setLabel(label);
   };
 

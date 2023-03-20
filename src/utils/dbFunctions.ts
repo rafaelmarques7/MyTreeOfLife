@@ -3,25 +3,20 @@ import { Driver, Node, Relationship } from "neo4j-driver-core";
 import { env } from "../env";
 
 export const instantiateNeoDriver = () => {
-  try {
-    return neo4j.driver(
-      env.REACT_APP_NEO_CONN_STRING,
-      neo4j.auth.basic("neo4j", env.REACT_APP_NEO_PASSWORD)
-    );
-  } catch (e) {
-    console.error("Could not instantiate Neo4j driver");
-    return undefined;
-  }
+  return neo4j.driver(
+    env.REACT_APP_NEO_CONN_STRING,
+    neo4j.auth.basic("neo4j", env.REACT_APP_NEO_PASSWORD)
+  );
 };
 
-export const getNodeList = async (driver: Driver) => {
+export const queryNodeList = async (driver: Driver) => {
   const query = "MATCH (n) RETURN n";
   const result = await dbQuery(driver, query);
   const data: Node[] = result?.records.map((r) => r.get("n")) || [];
   return data;
 };
 
-export const getRelationshipList = async (driver: Driver) => {
+export const queryRelationshipList = async (driver: Driver) => {
   const query = "MATCH ()-[r]->() RETURN r";
   const result = await dbQuery(driver, query);
   const data: Relationship[] = result?.records.map((r) => r.get("r")) || [];
@@ -60,7 +55,6 @@ export const createNewNodes = async (
   console.log("createNewNodes", nodeNames, label);
 
   const nodes = nodeNames.map((name) => `(:${label} {name: '${name}'})`);
-  // const query = `CREATE ${nodes.join(', ')}`;
   const query = `CREATE ${nodes.join(", ")} ${querySelectAll}`;
 
   return await dbQuery(driver, query);
@@ -91,6 +85,16 @@ export const deleteNode = async (driver: Driver, node: Node) => {
   dbQuery(driver, query);
 };
 
+export const deleteNodes = async (driver: Driver, nodes: Node[]) => {
+  console.log("deleteNodes", nodes);
+  const nodeIdList = nodes.map((n) => n.elementId);
+
+  const query = `MATCH (n) WHERE elementId(n) IN [${nodes
+    .map((n) => `"${n.elementId}"`)
+    .join(", ")}] DETACH DELETE n`;
+  dbQuery(driver, query);
+};
+
 export const deleteRelationship = async (
   driver: Driver,
   relationship: Relationship,
@@ -106,8 +110,8 @@ export const deleteRelationship = async (
 };
 
 export const queryAllElements = async (driver: Driver) => {
-  const nodeList = await getNodeList(driver);
-  const relationshipList = await getRelationshipList(driver);
+  const nodeList = await queryNodeList(driver);
+  const relationshipList = await queryRelationshipList(driver);
 
   return { nodeList, relationshipList };
 };

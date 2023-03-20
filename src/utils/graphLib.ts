@@ -1,8 +1,16 @@
 import { Node, Relationship } from "neo4j-driver";
-import { EdgeGraphData, GraphData, LabelInfo, NodeGraphData } from "../interfaces";
+import {
+  EdgeGraphData,
+  GraphData,
+  LabelInfo,
+  NodeGraphData,
+} from "../interfaces";
 
-export const convertNeoToVis = (nodesNeo: Node[], edgesNeo: Relationship[]): GraphData => {
-  console.log({ nodesNeo, edgesNeo })
+export const convertNeoToVis = (
+  nodesNeo: Node[],
+  edgesNeo: Relationship[]
+): GraphData => {
+  console.log({ nodesNeo, edgesNeo });
   const nodes: NodeGraphData[] = nodesNeo.map((n) => ({
     id: n.elementId,
     label: n.properties?.name,
@@ -26,7 +34,7 @@ export const convertNeoToVis = (nodesNeo: Node[], edgesNeo: Relationship[]): Gra
 };
 
 export const nodeToString = (node: Node) => {
-  return `(${node.labels[0]}): ${node.properties?.name} `;
+  return `(${node.labels[0]}): ${node.properties?.name}`;
 };
 
 export function getNodeLabel(node: Node): LabelInfo {
@@ -44,7 +52,10 @@ export function getNodesLabels(nodes: Node[], sort = true): LabelInfo[] {
   return labels;
 }
 
-export function getRelationshionLabel(rel: Relationship, nodes: Node[]): LabelInfo {
+export function getRelationshionLabel(
+  rel: Relationship,
+  nodes: Node[]
+): LabelInfo {
   const type = rel.type;
   let [from, to] = ["", ""];
   nodes.forEach((n) => {

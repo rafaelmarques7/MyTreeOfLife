@@ -1,18 +1,14 @@
 import { Driver, Node, Relationship } from "neo4j-driver";
-import { GraphData } from "../interfaces";
-import {
-  createNewNodes,
-  getNodeList,
-  instantiateNeoDriver,
-  queryAllElements,
-} from "../utils/dbFunctions";
+import { GraphData, GraphElement } from "../interfaces";
+import { instantiateNeoDriver } from "../utils/dbFunctions";
 import { convertNeoToVis } from "../utils/graphLib";
 
-interface StateApp {
+export interface StateApp {
   nodeList: Node[];
   relationshipList: Relationship[];
   dataGraph: GraphData;
-  driver: Driver | undefined;
+  driver: Driver;
+  selectedElements: GraphElement[];
 }
 
 const initialState: StateApp = {
@@ -20,6 +16,7 @@ const initialState: StateApp = {
   relationshipList: [],
   dataGraph: convertNeoToVis([], []),
   driver: instantiateNeoDriver(),
+  selectedElements: [],
 };
 
 export default function rootReducer(state: StateApp = initialState, action) {
@@ -30,42 +27,11 @@ export default function rootReducer(state: StateApp = initialState, action) {
       return { ...state, relationshipList: action.payload };
     case "SET_DATA_GRAPH":
       return { ...state, dataGraph: action.payload };
+    case "SET_SELECTED_ELEMENTS":
+      return { ...state, selectedElements: action.payload };
     default:
       return state;
   }
 }
 
 export type RootState = ReturnType<typeof rootReducer>;
-
-export const addNode = (nodeNames: string[], label: string) => {
-  return async (dispatch, getState) => {
-    const driver = getState().driver;
-
-    const res = await createNewNodes(driver, nodeNames, label);
-    const nodeList: Node[] = res?.records.map((r) => r.get("nodes"))[0] || [];
-
-    dispatch({ type: "SET_NODE_LIST", payload: nodeList });
-    dispatch(getAllElementsDispatch());
-  };
-};
-
-export const dispatchGetNodeList = (driver: Driver) => {
-  return async (dispatch) => {
-    const nodeList = await getNodeList(driver);
-
-    dispatch({ type: "SET_NODE_LIST", payload: nodeList });
-  };
-};
-
-export const getAllElementsDispatch = () => {
-  return async (dispatch, getState) => {
-    const driver = getState().driver;
-
-    const { nodeList, relationshipList } = await queryAllElements(driver);
-    const dataGraph = convertNeoToVis(nodeList, relationshipList);
-
-    dispatch({ type: "SET_NODE_LIST", payload: nodeList });
-    dispatch({ type: "SET_RELATIONSHIP_LIST", payload: relationshipList });
-    dispatch({ type: "SET_DATA_GRAPH", payload: dataGraph });
-  };
-};
