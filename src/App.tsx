@@ -1,43 +1,25 @@
 import React, { useState, useEffect } from "react";
-import neo4j, { Node, Relationship } from "neo4j-driver";
-import { Box, Button, Container, Flex, Text } from "@chakra-ui/react";
+import neo4j from "neo4j-driver";
+import { Flex, Text } from "@chakra-ui/react";
 // import { mockPersonList, mockRelationshipList } from "./__mocks__/neo4j";
 import { env } from "./env";
-import {
-  createNewNodes,
-  createNode,
-  createRelationship,
-  deleteNode,
-  deleteRelationship,
-  getNodeList,
-  getRelationshipList,
-} from "./utils/dbFunctions";
+import { deleteNode, deleteRelationship } from "./utils/dbFunctions";
 import { Header } from "./components/Header";
-import {
-  convertNeoToVis,
-  getNodeLabel,
-  getNodesLabels,
-  getRelationshionLabel,
-  getRelationshionLabels,
-} from "./utils/graphLib";
-import { NewRelationshipForm } from "./components/NewRelationshipForm";
-import { NewNode } from "./components/NewNode";
+import { getNodeLabel, getRelationshionLabel } from "./utils/graphLib";
 import { NetworkGraph } from "./components/MyGraph";
-import { ListWithDelete } from "./components/ListWithDelete";
 import { DeleteButtonWithModal } from "./components/DeleteButtonWithModal";
 import { ButtonNewNode } from "./components/ButtonNewNode";
 import { LabelInfo } from "./interfaces";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { addNode, getAllElementsDispatch, RootState } from "./state/reducers";
 import { useAppDispatch } from "./hooks";
 
-const driver = neo4j.driver(
-  env.REACT_APP_NEO_CONN_STRING,
-  neo4j.auth.basic("neo4j", env.REACT_APP_NEO_PASSWORD)
-);
+// const driver = neo4j.driver(
+//   env.REACT_APP_NEO_CONN_STRING,
+//   neo4j.auth.basic("neo4j", env.REACT_APP_NEO_PASSWORD)
+// );
 
 function App() {
-  // const dispatch = useDispatch();
   const dispatch = useAppDispatch();
 
   const nodeList = useSelector((state: RootState) => state?.nodeList);
@@ -62,7 +44,8 @@ function App() {
 
   useEffect(() => {
     async function loadInitialData() {
-      dispatch(getAllElementsDispatch(driver));
+      dispatch(getAllElementsDispatch());
+      // dispatch(getAllElementsDispatch(driver));
     }
 
     if (env.REACT_APP_USE_NEO_DB) {
@@ -71,13 +54,6 @@ function App() {
       console.log("initialising graph with mock data");
     }
   }, []);
-
-  // const onCreateNodes = async (nodeNames: string[], nodeLabel: string) => {
-  //   console.log("create nodes was clicked", nodeNames, nodeLabel);
-
-  //   // @ts-ignore
-  //   dispatch(addNode(driver, nodeNames, nodeLabel));
-  // };
 
   const onGraphClick = (params) => {
     console.log("onGraphClick", params, selectionList);
@@ -124,7 +100,7 @@ function App() {
         (n) => n.elementId === selectionLabel?.elementId
       )[0];
 
-      deleteNode(driver, node);
+      // deleteNode(driver, node);
     }
 
     if (selectionType === "edge") {
@@ -138,7 +114,7 @@ function App() {
         (n) => n.elementId === relationship.endNodeElementId
       )[0];
 
-      deleteRelationship(driver, relationship, nodeFrom, nodeTo);
+      // deleteRelationship(driver, relationship, nodeFrom, nodeTo);
     }
   };
 
@@ -162,7 +138,7 @@ function App() {
           </Flex>
           <ButtonNewNode
             nodes={nodeList}
-            onSubmit={(names, label) => dispatch(addNode(driver, names, label))}
+            onSubmit={(names, label) => dispatch(addNode(names, label))}
           />
         </Flex>
       </Flex>

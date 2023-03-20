@@ -3,6 +3,7 @@ import { GraphData } from "../interfaces";
 import {
   createNewNodes,
   getNodeList,
+  instantiateNeoDriver,
   queryAllElements,
 } from "../utils/dbFunctions";
 import { convertNeoToVis } from "../utils/graphLib";
@@ -11,12 +12,14 @@ interface StateApp {
   nodeList: Node[];
   relationshipList: Relationship[];
   dataGraph: GraphData;
+  driver: Driver | undefined;
 }
 
 const initialState: StateApp = {
   nodeList: [],
   relationshipList: [],
   dataGraph: convertNeoToVis([], []),
+  driver: instantiateNeoDriver(),
 };
 
 export default function rootReducer(state: StateApp = initialState, action) {
@@ -34,13 +37,15 @@ export default function rootReducer(state: StateApp = initialState, action) {
 
 export type RootState = ReturnType<typeof rootReducer>;
 
-export const addNode = (driver: Driver, nodeNames: string[], label: string) => {
-  return async (dispatch) => {
+export const addNode = (nodeNames: string[], label: string) => {
+  return async (dispatch, getState) => {
+    const driver = getState().driver;
+
     const res = await createNewNodes(driver, nodeNames, label);
     const nodeList: Node[] = res?.records.map((r) => r.get("nodes"))[0] || [];
 
     dispatch({ type: "SET_NODE_LIST", payload: nodeList });
-    dispatch(getAllElementsDispatch(driver));
+    dispatch(getAllElementsDispatch());
   };
 };
 
@@ -52,8 +57,10 @@ export const dispatchGetNodeList = (driver: Driver) => {
   };
 };
 
-export const getAllElementsDispatch = (driver: Driver) => {
-  return async (dispatch) => {
+export const getAllElementsDispatch = () => {
+  return async (dispatch, getState) => {
+    const driver = getState().driver;
+
     const { nodeList, relationshipList } = await queryAllElements(driver);
     const dataGraph = convertNeoToVis(nodeList, relationshipList);
 

@@ -1,4 +1,18 @@
+import neo4j from "neo4j-driver";
 import { Driver, Node, Relationship } from "neo4j-driver-core";
+import { env } from "../env";
+
+export const instantiateNeoDriver = () => {
+  try {
+    return neo4j.driver(
+      env.REACT_APP_NEO_CONN_STRING,
+      neo4j.auth.basic("neo4j", env.REACT_APP_NEO_PASSWORD)
+    );
+  } catch (e) {
+    console.error("Could not instantiate Neo4j driver");
+    return undefined;
+  }
+};
 
 export const getNodeList = async (driver: Driver) => {
   const query = "MATCH (n) RETURN n";
@@ -30,20 +44,24 @@ const dbQuery = async (driver: Driver, query) => {
 };
 
 export const createNode = async (driver: Driver, nodeName, nodeLabel) => {
-  console.log('createNode', nodeName, nodeLabel)
+  console.log("createNode", nodeName, nodeLabel);
 
   const query = `CREATE (n:${nodeLabel} {name: '${nodeName}'}) RETURN n`;
   dbQuery(driver, query);
 };
 
-const querySelectAll = " WITH * MATCH (n) RETURN collect(n) AS nodes"
+const querySelectAll = " WITH * MATCH (n) RETURN collect(n) AS nodes";
 
-export const createNewNodes = async (driver: Driver, nodeNames: string[], label: string) => {
-  console.log('createNewNodes', nodeNames, label)
+export const createNewNodes = async (
+  driver: Driver,
+  nodeNames: string[],
+  label: string
+) => {
+  console.log("createNewNodes", nodeNames, label);
 
-  const nodes = nodeNames.map(name => `(:${label} {name: '${name}'})`);
+  const nodes = nodeNames.map((name) => `(:${label} {name: '${name}'})`);
   // const query = `CREATE ${nodes.join(', ')}`;
-  const query = `CREATE ${nodes.join(', ')} ${querySelectAll}`;
+  const query = `CREATE ${nodes.join(", ")} ${querySelectAll}`;
 
   return await dbQuery(driver, query);
 };
@@ -67,7 +85,7 @@ export const createRelationship = async (
 };
 
 export const deleteNode = async (driver: Driver, node: Node) => {
-  console.log('deleteNode', node);
+  console.log("deleteNode", node);
 
   const query = `Match (p:${node.labels[0]} {name: '${node.properties.name}'}) Detach Delete p`;
   dbQuery(driver, query);
@@ -79,7 +97,7 @@ export const deleteRelationship = async (
   nodeFrom: Node,
   nodeTo: Node
 ) => {
-  console.log('deleteRelationship', relationship, nodeFrom, nodeTo)
+  console.log("deleteRelationship", relationship, nodeFrom, nodeTo);
 
   const query = `
     MATCH (p {name: '${nodeFrom.properties?.name}'})-[r:${relationship.type}]->(s {name: '${nodeTo.properties?.name}'})
@@ -92,5 +110,4 @@ export const queryAllElements = async (driver: Driver) => {
   const relationshipList = await getRelationshipList(driver);
 
   return { nodeList, relationshipList };
-
-}
+};

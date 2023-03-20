@@ -12,7 +12,7 @@ export const DropdownWithFreeText: React.FC<Props> = ({
   labelArray,
   setValue,
 }) => {
-  const [selectedValue, setSelectedValue] = useState(label);
+  const [selectedValue, setSelectedValue] = useState("");
   const [textInputValue, setTextInputValue] = useState("");
 
   const handleChange = (event) => {
@@ -48,6 +48,7 @@ export const DropdownWithFreeText: React.FC<Props> = ({
       <Flex maxW={"500px"}>
         <Select
           placeholder={label}
+          colorScheme="green"
           value={selectedValue}
           onChange={handleChange}
           flex="1"
