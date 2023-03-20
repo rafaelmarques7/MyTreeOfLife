@@ -29,6 +29,7 @@ import { ButtonNewNode } from "./components/ButtonNewNode";
 import { LabelInfo } from "./interfaces";
 import { useDispatch, useSelector } from "react-redux";
 import { addNode, getAllElementsDispatch, RootState } from "./state/reducers";
+import { useAppDispatch } from "./hooks";
 
 const driver = neo4j.driver(
   env.REACT_APP_NEO_CONN_STRING,
@@ -36,7 +37,8 @@ const driver = neo4j.driver(
 );
 
 function App() {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const nodeList = useSelector((state: RootState) => state?.nodeList);
   const relationshipList = useSelector(
@@ -44,21 +46,10 @@ function App() {
   );
   const dataGraph = useSelector((state: RootState) => state?.dataGraph);
 
-  // const [nodeList, setNodeList] = useState<Node[]>([]);
-  // const [relationshipList, setRelationShipList] = useState<Relationship[]>([]);
-
   const [selectionType, setSelectionType] = useState(""); // takes an elementId
   const [selectionLabel, setSelectionLabel] = useState<LabelInfo>();
 
-  // const [selectionList, setSelectionList] = useState<LabelInfo[]>([]);
   const [selectionList, setSelectionList] = useState<LabelInfo[]>([]);
-
-  // const dataGraph = convertNeoToVis(nodeList, relationshipList);
-
-  // const dataGraph = useMemo(() => {
-  //   const data = convertNeoToVis(nodeList, relationshipList);
-  //   return data;
-  // }, [nodeList, relationshipList]);
 
   console.log("rendering app", {
     nodeList,
@@ -71,31 +62,22 @@ function App() {
 
   useEffect(() => {
     async function loadInitialData() {
-      // setNodeList(await getNodeList(driver));
-      // @ts-ignore
       dispatch(getAllElementsDispatch(driver));
-      // dispatch(dispatchGetNodeList(driver));
-      // setRelationShipList(await getRelationshipList(driver));
     }
 
     if (env.REACT_APP_USE_NEO_DB) {
       loadInitialData();
     } else {
       console.log("initialising graph with mock data");
-      // setNodeList(mockPersonList);
-      // setRelationShipList(mockRelationshipList);
     }
   }, []);
 
-  const onCreateNodes = async (nodeNames: string[], nodeLabel: string) => {
-    console.log("create nodes was clicked", nodeNames, nodeLabel);
+  // const onCreateNodes = async (nodeNames: string[], nodeLabel: string) => {
+  //   console.log("create nodes was clicked", nodeNames, nodeLabel);
 
-    // @ts-ignore
-    dispatch(addNode(driver, nodeNames, nodeLabel));
-
-    // await createNewNodes(driver, nodeNames, nodeLabel);
-    // setNodeList(await getNodeList(driver)); // force refresh
-  };
+  //   // @ts-ignore
+  //   dispatch(addNode(driver, nodeNames, nodeLabel));
+  // };
 
   const onGraphClick = (params) => {
     console.log("onGraphClick", params, selectionList);
@@ -178,7 +160,10 @@ function App() {
               modalBody={`Are you sure you want to delete ${selectionLabel?.label}? `}
             />
           </Flex>
-          <ButtonNewNode nodes={nodeList} onSubmit={onCreateNodes} />
+          <ButtonNewNode
+            nodes={nodeList}
+            onSubmit={(names, label) => dispatch(addNode(driver, names, label))}
+          />
         </Flex>
       </Flex>
     </Flex>
