@@ -2,6 +2,7 @@ import { Node, Relationship } from "neo4j-driver";
 import { EdgeGraphData, GraphData, LabelInfo, NodeGraphData } from "../interfaces";
 
 export const convertNeoToVis = (nodesNeo: Node[], edgesNeo: Relationship[]): GraphData => {
+  console.log({ nodesNeo, edgesNeo })
   const nodes: NodeGraphData[] = nodesNeo.map((n) => ({
     id: n.elementId,
     label: n.properties?.name,

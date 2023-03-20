@@ -1,6 +1,6 @@
 import { Driver, Node, Relationship } from "neo4j-driver-core";
 
-export const getNodeList = async (driver) => {
+export const getNodeList = async (driver: Driver) => {
   const query = "MATCH (n) RETURN n";
   const result = await dbQuery(driver, query);
   const data: Node[] = result?.records.map((r) => r.get("n")) || [];
@@ -36,13 +36,16 @@ export const createNode = async (driver: Driver, nodeName, nodeLabel) => {
   dbQuery(driver, query);
 };
 
+const querySelectAll = " WITH * MATCH (n) RETURN collect(n) AS nodes"
 
 export const createNewNodes = async (driver: Driver, nodeNames: string[], label: string) => {
   console.log('createNewNodes', nodeNames, label)
 
   const nodes = nodeNames.map(name => `(:${label} {name: '${name}'})`);
-  const query = `CREATE ${nodes.join(', ')}`;
-  dbQuery(driver, query);
+  // const query = `CREATE ${nodes.join(', ')}`;
+  const query = `CREATE ${nodes.join(', ')} ${querySelectAll}`;
+
+  return await dbQuery(driver, query);
 };
 
 export const createRelationship = async (
@@ -83,3 +86,11 @@ export const deleteRelationship = async (
     DELETE r`;
   dbQuery(driver, query);
 };
+
+export const queryAllElements = async (driver: Driver) => {
+  const nodeList = await getNodeList(driver);
+  const relationshipList = await getRelationshipList(driver);
+
+  return { nodeList, relationshipList };
+
+}

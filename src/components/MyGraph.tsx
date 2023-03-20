@@ -26,7 +26,7 @@ const MyGraph: React.FC<PropsNetworkGraph> = ({
       onNodeClick(params);
     });
     // the line below makes the network re-render only when array sizes change
-  }, [nodes.length, edges.length]);
+  }, [nodes?.length, edges?.length]);
 
   return <div ref={container} style={{ height: "93vh", width: "100vh" }} />;
 };

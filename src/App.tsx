@@ -28,7 +28,7 @@ import { DeleteButtonWithModal } from "./components/DeleteButtonWithModal";
 import { ButtonNewNode } from "./components/ButtonNewNode";
 import { LabelInfo } from "./interfaces";
 import { useDispatch, useSelector } from "react-redux";
-import { addNode } from "./state/reducers";
+import { addNode, getAllElementsDispatch, RootState } from "./state/reducers";
 
 const driver = neo4j.driver(
   env.REACT_APP_NEO_CONN_STRING,
@@ -36,11 +36,16 @@ const driver = neo4j.driver(
 );
 
 function App() {
-  // @ts-ignore
-  const nodeList = useSelector((state) => state?.nodeList);
+  const dispatch = useDispatch();
+
+  const nodeList = useSelector((state: RootState) => state?.nodeList);
+  const relationshipList = useSelector(
+    (state: RootState) => state?.relationshipList
+  );
+  const dataGraph = useSelector((state: RootState) => state?.dataGraph);
 
   // const [nodeList, setNodeList] = useState<Node[]>([]);
-  const [relationshipList, setRelationShipList] = useState<Relationship[]>([]);
+  // const [relationshipList, setRelationShipList] = useState<Relationship[]>([]);
 
   const [selectionType, setSelectionType] = useState(""); // takes an elementId
   const [selectionLabel, setSelectionLabel] = useState<LabelInfo>();
@@ -48,7 +53,7 @@ function App() {
   // const [selectionList, setSelectionList] = useState<LabelInfo[]>([]);
   const [selectionList, setSelectionList] = useState<LabelInfo[]>([]);
 
-  const dataGraph = convertNeoToVis(nodeList, relationshipList);
+  // const dataGraph = convertNeoToVis(nodeList, relationshipList);
 
   // const dataGraph = useMemo(() => {
   //   const data = convertNeoToVis(nodeList, relationshipList);
@@ -67,7 +72,10 @@ function App() {
   useEffect(() => {
     async function loadInitialData() {
       // setNodeList(await getNodeList(driver));
-      setRelationShipList(await getRelationshipList(driver));
+      // @ts-ignore
+      dispatch(getAllElementsDispatch(driver));
+      // dispatch(dispatchGetNodeList(driver));
+      // setRelationShipList(await getRelationshipList(driver));
     }
 
     if (env.REACT_APP_USE_NEO_DB) {
@@ -79,7 +87,6 @@ function App() {
     }
   }, []);
 
-  const dispatch = useDispatch();
   const onCreateNodes = async (nodeNames: string[], nodeLabel: string) => {
     console.log("create nodes was clicked", nodeNames, nodeLabel);
 
@@ -151,9 +158,6 @@ function App() {
 
       deleteRelationship(driver, relationship, nodeFrom, nodeTo);
     }
-
-    // setNodeList(await getNodeList(driver)); // force refresh
-    setRelationShipList(await getRelationshipList(driver)); // force refresh
   };
 
   return (
