@@ -3,18 +3,28 @@ import { SmallCloseIcon } from "@chakra-ui/icons";
 import { Text, Flex, Container } from "@chakra-ui/react";
 import { GraphElement } from "../interfaces";
 import { v4 as uuidv4 } from "uuid";
-import { useAppDispatch } from "../hooks";
+import { useAppDispatch, useAppSelector } from "../hooks";
 import { handleRemoveFromSelection } from "../state/actions";
+import { StateApp } from "../state/reducers";
+import { selectActionTitle } from "../state/helpers";
 
 interface Props {
-  selectedElements: GraphElement[];
+  // selectedElements: GraphElement[];
 }
 
-export const SelectionList: React.FC<Props> = ({ selectedElements }) => {
+export const SelectionList: React.FC<Props> = ({}) => {
+  // const dispatch = useAppDispatch();
+
+  const { currentAction, selectedElements } = useAppSelector(
+    (state: StateApp) => state
+  );
+
+  const title = selectActionTitle(currentAction);
+
   return (
     <Flex alignItems={"center"} direction="column" pt={3}>
-      <Container borderBottom={"1px solid black"}>
-        <Text textAlign={"center"}>Selected elements:</Text>
+      <Container>
+        <Text textAlign={"center"}>{title}</Text>
       </Container>
       {selectedElements.map((el) => (
         <SelectionListItem el={el} key={uuidv4()} />

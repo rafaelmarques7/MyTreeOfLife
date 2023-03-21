@@ -2,21 +2,25 @@ import { Node, Relationship } from "neo4j-driver";
 import {
   EdgeGraphData,
   GraphData,
+  GraphElement,
   LabelInfo,
   NodeGraphData,
 } from "../interfaces";
 
 export const convertNeoToVis = (
   nodesNeo: Node[],
-  edgesNeo: Relationship[]
+  edgesNeo: Relationship[],
+  selectedElements: GraphElement[] = []
 ): GraphData => {
-  console.log({ nodesNeo, edgesNeo });
   const nodes: NodeGraphData[] = nodesNeo.map((n) => ({
     id: n.elementId,
     label: n.properties?.name,
     title: n.properties?.name,
-    // group: n.properties?.name?.match(/r /i) ? 1 : 2,
-    // we can set `color` here
+    color: selectedElements.filter((e) => e.elementId === n.elementId)[0]
+      ? "orange"
+      : "white",
+    // n.properties?.name?.match(/r/i) ? "green" : "red",
+    group: n.properties?.name?.match(/r/i) ? 1 : 1,
   }));
 
   const edges: EdgeGraphData[] = edgesNeo.map((r) => ({

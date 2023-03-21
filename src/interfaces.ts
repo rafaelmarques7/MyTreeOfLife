@@ -18,7 +18,8 @@ export interface NodeGraphData {
   id: string;
   label: string;
   title: string;
-  group?: string;
+  group: number;
+  color: string;
 }
 
 export interface EdgeGraphData {
@@ -36,4 +37,11 @@ export interface GraphData {
 export interface EventGraphClick {
   nodes: string[];
   edges: string[];
+}
+
+export enum enumUserAction {
+  "none",
+  "createRelationships",
+  "deleteRelationships",
+  "deleteNodes",
 }

@@ -1,7 +1,8 @@
 import { Driver, Node } from "neo4j-driver";
-import { EventGraphClick, GraphElement } from "../interfaces";
+import { enumUserAction, EventGraphClick, GraphElement } from "../interfaces";
 import {
   createNewNodes,
+  createRelationship,
   deleteNode,
   deleteNodes,
   queryAllElements,
@@ -33,10 +34,14 @@ export const getNodeList = (driver: Driver) => {
 
 export const getAllElements = () => {
   return async (dispatch, getState) => {
-    const driver = getState().driver;
+    const { driver, selectedElements } = getState() as StateApp;
 
     const { nodeList, relationshipList } = await queryAllElements(driver);
-    const dataGraph = convertNeoToVis(nodeList, relationshipList);
+    const dataGraph = convertNeoToVis(
+      nodeList,
+      relationshipList,
+      selectedElements
+    );
 
     dispatch({ type: "SET_NODE_LIST", payload: nodeList });
     dispatch({ type: "SET_RELATIONSHIP_LIST", payload: relationshipList });
@@ -45,56 +50,72 @@ export const getAllElements = () => {
 };
 
 export const handleGraphClick = (event: EventGraphClick) => {
-  return async (dispatch, getState) => {
-    console.log("handleGraphClick", event);
+  console.log("handleGraphClick", event);
 
+  return async (dispatch, getState) => {
     const isRelevantClick = event.nodes.length > 0 || event.edges.length > 0;
     if (!isRelevantClick) return () => {};
 
-    const { nodeList, relationshipList, dataGraph, selectedElements } =
-      getState() as StateApp;
+    const state = getState() as StateApp;
 
-    const elementType = event.nodes.length > 0 ? "node" : "relationship";
-
-    const element =
-      elementType === "node"
-        ? extractNodeFromGraph(event, nodeList)
-        : extractEdgeFromGraph(event, dataGraph, relationshipList, nodeList);
-
-    // check if element exists and don't re-add it if it does
-    const elementExists = selectedElements.some(
-      (se) => se?.elementId === element?.elementId
+    const { elementType, element, elementExists } = getElementFromClick(
+      event,
+      state
     );
 
-    if (!elementExists) {
-      dispatch({
-        type: "SET_SELECTED_ELEMENTS",
-        payload: [...selectedElements, element],
-      });
-    } else {
-      console.log("element already exists in selectedElements");
-    }
+    if (elementExists) return () => {};
+
+    const isValidAction =
+      (state.currentAction === enumUserAction.deleteNodes &&
+        elementType === "node") ||
+      (state.currentAction === enumUserAction.deleteRelationships &&
+        elementType === "relationship") ||
+      (state.currentAction === enumUserAction.createRelationships &&
+        elementType === "node");
+
+    if (!isValidAction) return () => {};
+
+    // update state
+    const newSelectedElements = [...state.selectedElements, element];
+    const dataGraph = convertNeoToVis(
+      state.nodeList,
+      state.relationshipList,
+      newSelectedElements
+    );
+
+    dispatch({ type: "SET_SELECTED_ELEMENTS", payload: newSelectedElements });
+    dispatch({ type: "SET_DATA_GRAPH", payload: dataGraph });
   };
 };
 
-export const handleDeleteSelection = () => {
-  return async (dispatch, getState) => {
-    const { driver, selectedElements, nodeList } = getState() as StateApp;
-    console.log("selectedElements", selectedElements);
+interface ElementFromClick {
+  elementType: "node" | "relationship";
+  element: GraphElement;
+  elementExists: boolean;
+}
 
-    // extract the nodes and relationships from the selected elements
-    const nodesToDelete = selectedElements.map((e) =>
-      nodeList.find((n) => n.elementId === e.elementId)
-    ) as unknown as Node[];
-    // const relationshipsToDelete = selectedElements.filter(
-    // (e) => {
-    // co
-    // });
-    //
-    await deleteNodes(driver, nodesToDelete);
-    dispatch({ type: "SET_SELECTED_ELEMENTS", payload: [] });
-    dispatch(getAllElements());
-  };
+export const getElementFromClick = (
+  event: EventGraphClick,
+  state: StateApp
+): ElementFromClick => {
+  const elementType = event.nodes.length > 0 ? "node" : "relationship";
+
+  const element =
+    elementType === "node"
+      ? extractNodeFromGraph(event, state.nodeList)
+      : extractEdgeFromGraph(
+          event,
+          state.dataGraph,
+          state.relationshipList,
+          state.nodeList
+        );
+
+  // check if element exists and don't re-add it if it does
+  const elementExists = state.selectedElements.some(
+    (se) => se?.elementId === element?.elementId
+  );
+
+  return { elementType, element, elementExists };
 };
 
 export const handleRemoveFromSelection = (element: GraphElement) => {
@@ -107,5 +128,83 @@ export const handleRemoveFromSelection = (element: GraphElement) => {
 
     dispatch({ type: "SET_SELECTED_ELEMENTS", payload: newSelectedElements });
     dispatch(getAllElements());
+  };
+};
+
+export const handleCreateRelationship = () => {
+  return async (dispatch, getState) => {
+    const { driver, selectedElements, nodeList } = getState() as StateApp;
+
+    // createRelationship(driver, from, to, relationshipType);
+
+    // dispatch({ type: "SET_SELECTED_ELEMENTS", payload: [] });
+    dispatch(getAllElements());
+  };
+};
+
+export const handleSetActionType = (actionType: enumUserAction) => {
+  console.log("handleSetActionType", actionType);
+
+  return async (dispatch, getState) => {
+    const { currentAction } = getState() as StateApp;
+
+    const isFirstAction = currentAction === enumUserAction.none;
+    console.log("isFirstAction", isFirstAction);
+
+    if (isFirstAction) {
+      dispatch({ type: "SET_CURRENT_ACTION", payload: actionType });
+      return;
+    }
+
+    if (actionType === enumUserAction.none) {
+      dispatch({ type: "SET_SELECTED_ELEMENTS", payload: [] });
+    }
+
+    switch (currentAction) {
+      case enumUserAction.deleteNodes:
+        dispatch(handleDeleteNodes());
+        break;
+      case enumUserAction.createRelationships:
+        dispatch(handleCreateRelationship());
+        break;
+      case enumUserAction.deleteRelationships:
+        dispatch(handleDeleteRelationships());
+        break;
+      default:
+        break;
+    }
+
+    dispatch({ type: "SET_CURRENT_ACTION", payload: enumUserAction.none });
+    dispatch({ type: "SET_SELECTED_ELEMENTS", payload: [] });
+  };
+};
+
+export const handleDeleteNodes = () => {
+  return async (dispatch, getState) => {
+    const { driver, selectedElements, nodeList } = getState() as StateApp;
+
+    // extract the nodes and relationships from the selected elements
+    const nodesToDelete = selectedElements.map((e) =>
+      nodeList.find((n) => n.elementId === e.elementId)
+    ) as unknown as Node[];
+
+    await deleteNodes(driver, nodesToDelete);
+    dispatch({ type: "SET_SELECTED_ELEMENTS", payload: [] });
+    dispatch(getAllElements());
+  };
+};
+
+export const handleDeleteRelationships = () => {
+  return async (dispatch, getState) => {
+    // const { driver, selectedElements, nodeList } = getState() as StateApp;
+
+    // // extract the nodes and relationships from the selected elements
+    // const nodesToDelete = selectedElements.map((e) =>
+    //   nodeList.find((n) => n.elementId === e.elementId)
+    // ) as unknown as Node[];
+
+    // await deleteNodes(driver, nodesToDelete);
+    dispatch({ type: "SET_SELECTED_ELEMENTS", payload: [] });
+    // dispatch(getAllElements());
   };
 };

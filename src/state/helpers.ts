@@ -1,6 +1,26 @@
 import { Node, Relationship } from "neo4j-driver";
-import { EventGraphClick, GraphData, GraphElement } from "../interfaces";
+import {
+  enumUserAction,
+  EventGraphClick,
+  GraphData,
+  GraphElement,
+} from "../interfaces";
 import { nodeToString, getRelationshionLabel } from "../utils/graphLib";
+
+export const selectActionTitle = (actionType: enumUserAction): string => {
+  switch (actionType) {
+    case enumUserAction.none:
+      return "";
+    case enumUserAction.deleteNodes:
+      return "Select nodes to delete";
+    case enumUserAction.createRelationships:
+      return "Select the starting node"; // @TODO: improve this
+    case enumUserAction.deleteRelationships:
+      return "Select relationships to delete";
+    default:
+      return "";
+  }
+};
 
 export const extractNodeFromGraph = (
   event: EventGraphClick,

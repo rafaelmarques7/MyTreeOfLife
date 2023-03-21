@@ -1,5 +1,5 @@
 import { Driver, Node, Relationship } from "neo4j-driver";
-import { GraphData, GraphElement } from "../interfaces";
+import { enumUserAction, GraphData, GraphElement } from "../interfaces";
 import { instantiateNeoDriver } from "../utils/dbFunctions";
 import { convertNeoToVis } from "../utils/graphLib";
 
@@ -9,14 +9,16 @@ export interface StateApp {
   dataGraph: GraphData;
   driver: Driver;
   selectedElements: GraphElement[];
+  currentAction: enumUserAction;
 }
 
 const initialState: StateApp = {
   nodeList: [],
   relationshipList: [],
-  dataGraph: convertNeoToVis([], []),
+  dataGraph: convertNeoToVis([], [], []),
   driver: instantiateNeoDriver(),
   selectedElements: [],
+  currentAction: enumUserAction.none,
 };
 
 export default function rootReducer(state: StateApp = initialState, action) {
@@ -29,6 +31,8 @@ export default function rootReducer(state: StateApp = initialState, action) {
       return { ...state, dataGraph: action.payload };
     case "SET_SELECTED_ELEMENTS":
       return { ...state, selectedElements: action.payload };
+    case "SET_CURRENT_ACTION":
+      return { ...state, currentAction: action.payload };
     default:
       return state;
   }

@@ -46,7 +46,8 @@ export const ButtonNewNode: React.FC<Props> = ({
     <>
       <Button
         onClick={() => setIsOpen(true)}
-        bg="gray.500"
+        colorScheme="green"
+        // bg="gray.500"
         textColor="white"
         fontWeight="bold"
       >
