@@ -5,16 +5,28 @@ import {
   GraphData,
   GraphElement,
 } from "../interfaces";
-import { nodeToString, getRelationshionLabel } from "../utils/graphLib";
+import {
+  nodeToString,
+  getRelationshionLabel,
+  sortList,
+} from "../utils/graphLib";
 
-export const selectActionTitle = (actionType: enumUserAction): string => {
+export const selectActionTitle = (
+  actionType: enumUserAction,
+  selectedElements: GraphElement[]
+): string => {
   switch (actionType) {
     case enumUserAction.none:
       return "";
     case enumUserAction.deleteNodes:
       return "Select nodes to delete";
     case enumUserAction.createRelationships:
-      return "Select the starting node"; // @TODO: improve this
+      if (selectedElements.length === 0) {
+        return "Select the starting node";
+      } else {
+        return "Select nodes to apply";
+      }
+
     case enumUserAction.deleteRelationships:
       return "Select relationships to delete";
     default:
@@ -62,4 +74,14 @@ export const extractEdgeFromGraph = (
     label: label.label,
     elementId: relationship.elementId,
   };
+};
+
+export const existingRelationshipLabels = (
+  relationshipList: Relationship[]
+) => {
+  const allLabels = relationshipList.map((r) => r.type);
+  const uniqueLabels = new Set(allLabels);
+  const labels = sortList(Array.from(uniqueLabels));
+
+  return labels;
 };

@@ -10,6 +10,7 @@ import {
 } from "../state/actions";
 import { StateApp } from "../state/reducers";
 import { ButtonNewNode } from "./ButtonNewNode";
+import { ButtonNewRelationship } from "./ButtonNewRelationship";
 import { SelectionList } from "./SelectionList";
 
 export const ActionContainer: React.FC<{}> = () => {
@@ -53,7 +54,7 @@ export const ActionContainer: React.FC<{}> = () => {
           </Button>
         )}
 
-        <SelectionList />
+        {showButtonCancel && <SelectionList />}
 
         {showButtonNewNode && (
           <ButtonNewNode
@@ -61,6 +62,7 @@ export const ActionContainer: React.FC<{}> = () => {
             onSubmit={(names, label) => dispatch(addNode(names, label))}
           />
         )}
+
         {showButtonDelNodes && (
           <Button
             colorScheme="red"
@@ -72,16 +74,7 @@ export const ActionContainer: React.FC<{}> = () => {
           </Button>
         )}
 
-        {showButtonCreateRel && (
-          <Button
-            colorScheme="green"
-            onClick={() =>
-              dispatch(handleSetActionType(enumUserAction.createRelationships))
-            }
-          >
-            Create Relationships
-          </Button>
-        )}
+        {showButtonCreateRel && <ButtonNewRelationship />}
 
         {showbuttonDelRel && (
           <Button

@@ -10,6 +10,7 @@ export interface StateApp {
   driver: Driver;
   selectedElements: GraphElement[];
   currentAction: enumUserAction;
+  newRelationshipLabel: string;
 }
 
 const initialState: StateApp = {
@@ -19,9 +20,13 @@ const initialState: StateApp = {
   driver: instantiateNeoDriver(),
   selectedElements: [],
   currentAction: enumUserAction.none,
+  newRelationshipLabel: "",
 };
 
-export default function rootReducer(state: StateApp = initialState, action) {
+export default function rootReducer(
+  state: StateApp = initialState,
+  action
+): StateApp {
   switch (action.type) {
     case "SET_NODE_LIST":
       return { ...state, nodeList: action.payload };
@@ -33,6 +38,8 @@ export default function rootReducer(state: StateApp = initialState, action) {
       return { ...state, selectedElements: action.payload };
     case "SET_CURRENT_ACTION":
       return { ...state, currentAction: action.payload };
+    case "SET_NEW_RELATIONSHIP_LABEL":
+      return { ...state, newRelationshipLabel: action.payload };
     default:
       return state;
   }

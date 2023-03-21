@@ -3,6 +3,7 @@ import { enumUserAction, EventGraphClick, GraphElement } from "../interfaces";
 import {
   createNewNodes,
   createRelationship,
+  createRelationships,
   deleteNode,
   deleteNodes,
   queryAllElements,
@@ -133,12 +134,14 @@ export const handleRemoveFromSelection = (element: GraphElement) => {
 
 export const handleCreateRelationship = () => {
   return async (dispatch, getState) => {
-    const { driver, selectedElements, nodeList } = getState() as StateApp;
+    const { driver, selectedElements, newRelationshipLabel } =
+      getState() as StateApp;
 
-    // createRelationship(driver, from, to, relationshipType);
+    const from = selectedElements[0].element as Node;
+    const to = selectedElements[1].element as Node;
+    const nodes = selectedElements.map((el) => el.element as Node);
 
-    // dispatch({ type: "SET_SELECTED_ELEMENTS", payload: [] });
-    dispatch(getAllElements());
+    await createRelationships(driver, newRelationshipLabel, nodes);
   };
 };
 
@@ -176,6 +179,7 @@ export const handleSetActionType = (actionType: enumUserAction) => {
 
     dispatch({ type: "SET_CURRENT_ACTION", payload: enumUserAction.none });
     dispatch({ type: "SET_SELECTED_ELEMENTS", payload: [] });
+    dispatch(getAllElements());
   };
 };
 
@@ -208,3 +212,8 @@ export const handleDeleteRelationships = () => {
     // dispatch(getAllElements());
   };
 };
+
+export const handleSetNewRelationshipLabel = (label: string) => ({
+  type: "SET_NEW_RELATIONSHIP_LABEL",
+  payload: label,
+});

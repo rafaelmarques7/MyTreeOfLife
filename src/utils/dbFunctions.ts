@@ -27,12 +27,11 @@ const dbQuery = async (driver: Driver, query) => {
   const session = driver.session();
 
   try {
-    console.log("making query to db: ", query);
     const res = await session.run(query);
-    console.log("res: ", res);
+    console.log("db query result: ", { query, res });
     return res;
   } catch (error) {
-    console.error("Error executing query", error);
+    console.error("Error executing query", { query, error });
   } finally {
     session.close();
   }
@@ -76,6 +75,32 @@ export const createRelationship = async (
 
   const query = `MATCH (p:${vars.labelFrom} {name: '${vars.nameFrom}'}), (m:${vars.labelTo} {name: '${vars.nameTo}'}) CREATE (p)-[:${vars.relType}]->(m)`;
   dbQuery(driver, query);
+};
+
+export const createRelationships = async (
+  driver: Driver,
+  relationshipType: string,
+  nodes: Node[]
+) => {
+  const [firstNode, ...otherNodes] = nodes;
+  const matchClauses = otherNodes.map(
+    (node) =>
+      `MATCH (${node.properties.name}:${node.labels[0]} {name: '${node.properties.name}'})`
+  );
+  const createClauses = otherNodes.map(
+    (node) =>
+      `CREATE (${firstNode.properties.name})-[:${relationshipType}]->(${node.properties.name})`
+  );
+
+  const query = `
+    MATCH (${firstNode.properties.name}:${firstNode.labels[0]} {name: '${
+    firstNode.properties.name
+  }'})
+    ${matchClauses.join("\n")}
+    ${createClauses.join("\n")}
+  `;
+
+  return await dbQuery(driver, query);
 };
 
 export const deleteNode = async (driver: Driver, node: Node) => {
