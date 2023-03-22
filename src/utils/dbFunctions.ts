@@ -77,29 +77,43 @@ export const createRelationship = async (
   dbQuery(driver, query);
 };
 
+function generateRandomString(length: number) {
+  const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return result;
+}
+
 export const createRelationships = async (
   driver: Driver,
   relationshipType: string,
   nodes: Node[]
 ) => {
+  const uuids = nodes.map((_) => generateRandomString(16));
   const [firstNode, ...otherNodes] = nodes;
+
   const matchClauses = otherNodes.map(
-    (node) =>
-      `MATCH (${node.properties.name}:${node.labels[0]} {name: '${node.properties.name}'})`
+    (node, index) =>
+      `MATCH (${uuids[index + 1]}:${node.labels[0]} {name: '${
+        node.properties.name
+      }'})`
   );
   const createClauses = otherNodes.map(
-    (node) =>
-      `CREATE (${firstNode.properties.name})-[:${relationshipType}]->(${node.properties.name})`
+    (_, index) =>
+      `CREATE (${uuids[0]})-[:${relationshipType}]->(${uuids[index + 1]})`
   );
 
   const query = `
-    MATCH (${firstNode.properties.name}:${firstNode.labels[0]} {name: '${
+    MATCH (${uuids[0]}:${firstNode.labels[0]} {name: '${
     firstNode.properties.name
   }'})
     ${matchClauses.join("\n")}
     ${createClauses.join("\n")}
   `;
 
+  console.log({ query, uuids });
   return await dbQuery(driver, query);
 };
 

@@ -34,6 +34,14 @@ Error handling and user warnings
 - Create filtering, by node and relationship types
 - Display different colors for different node and relationship types
 
+## Bugs
+
+## Feature requests
+
+- Graph and edge colors
+- Toggle visibility of nodes and edges based on type
+- CICD
+
 ## useful links:
 
 ```
