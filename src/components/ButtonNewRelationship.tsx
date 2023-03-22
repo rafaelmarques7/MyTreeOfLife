@@ -61,13 +61,14 @@ export const ButtonNewRelationship: React.FC = () => {
         colorScheme="green"
         textColor="white"
         fontWeight="bold"
+        w="full"
       >
         Create Relationship
       </Button>
 
       <Modal isOpen={isOpen} onClose={onClose} isCentered={true}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent p={3}>
           <ModalHeader>Select a relationship label</ModalHeader>
           <ModalCloseButton />
           <ModalBody>

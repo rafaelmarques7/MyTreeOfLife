@@ -3,7 +3,7 @@ import { FaTree } from "react-icons/fa";
 
 export const Header = () => {
   return (
-    <Flex align="center" bg="gray.600" px={4} py={2} textAlign="center">
+    <Flex align="center" bg="gray.600" px={4} py={2} textAlign="center" h="5vh">
       <IconButton
         icon={<FaTree />}
         aria-label="Tree Icon"

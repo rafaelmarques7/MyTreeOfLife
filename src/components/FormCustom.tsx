@@ -28,6 +28,7 @@ export const FormCustom: React.FC<Props> = ({
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleKeyDown}
+          onBlur={() => onSubmit()}
         />
       </Flex>
     </FormControl>

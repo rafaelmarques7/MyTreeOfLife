@@ -50,6 +50,7 @@ export const ButtonNewNode: React.FC<Props> = ({
         // bg="gray.500"
         textColor="white"
         fontWeight="bold"
+        w="full"
       >
         {buttonLabel}
       </Button>

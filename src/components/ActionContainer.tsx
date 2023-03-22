@@ -1,13 +1,8 @@
-import { Button, Container, Flex, VStack } from "@chakra-ui/react";
-import React, { useState, useEffect } from "react";
+import { Button, VStack } from "@chakra-ui/react";
+import React from "react";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { enumUserAction } from "../interfaces";
-import {
-  addNode,
-  // getAllElements,
-  // handleDeleteSelection,
-  handleSetActionType,
-} from "../state/actions";
+import { addNode, handleSetActionType } from "../state/actions";
 import { StateApp } from "../state/reducers";
 import { ButtonNewNode } from "./ButtonNewNode";
 import { ButtonNewRelationship } from "./ButtonNewRelationship";
@@ -33,60 +28,62 @@ export const ActionContainer: React.FC<{}> = () => {
     currentAction === enumUserAction.deleteRelationships;
 
   return (
-    <Flex
+    <VStack
+      spacing={1.5}
+      minWidth={"200px"}
       position="absolute"
-      top={"5vh"}
+      top={"7vh"}
       right={1}
       direction="column"
-      width={"15vw"}
       bg="gray.100"
       boxShadow="md"
-      padding="1em"
+      padding="0.5em"
       borderRadius={"md"}
     >
-      <VStack spacing={3}>
-        {showButtonCancel && (
-          <Button
-            colorScheme="red"
-            onClick={() => dispatch(handleSetActionType(enumUserAction.none))}
-          >
-            Cancel
-          </Button>
-        )}
+      {showButtonCancel && (
+        <Button
+          colorScheme="red"
+          w="full"
+          onClick={() => dispatch(handleSetActionType(enumUserAction.none))}
+        >
+          Cancel
+        </Button>
+      )}
 
-        {showButtonCancel && <SelectionList />}
+      {showButtonCancel && <SelectionList />}
 
-        {showButtonNewNode && (
-          <ButtonNewNode
-            nodes={nodeList}
-            onSubmit={(names, label) => dispatch(addNode(names, label))}
-          />
-        )}
+      {showButtonNewNode && (
+        <ButtonNewNode
+          nodes={nodeList}
+          onSubmit={(names, label) => dispatch(addNode(names, label))}
+        />
+      )}
 
-        {showButtonDelNodes && (
-          <Button
-            colorScheme="red"
-            onClick={() =>
-              dispatch(handleSetActionType(enumUserAction.deleteNodes))
-            }
-          >
-            Delete nodes
-          </Button>
-        )}
+      {showButtonDelNodes && (
+        <Button
+          colorScheme="red"
+          w="full"
+          onClick={() =>
+            dispatch(handleSetActionType(enumUserAction.deleteNodes))
+          }
+        >
+          Delete nodes
+        </Button>
+      )}
 
-        {showButtonCreateRel && <ButtonNewRelationship />}
+      {showButtonCreateRel && <ButtonNewRelationship />}
 
-        {showbuttonDelRel && (
-          <Button
-            colorScheme="red"
-            onClick={() =>
-              dispatch(handleSetActionType(enumUserAction.deleteRelationships))
-            }
-          >
-            Delete Relationships
-          </Button>
-        )}
-      </VStack>
-    </Flex>
+      {showbuttonDelRel && (
+        <Button
+          colorScheme="red"
+          w="full"
+          onClick={() =>
+            dispatch(handleSetActionType(enumUserAction.deleteRelationships))
+          }
+        >
+          Delete Relationships
+        </Button>
+      )}
+    </VStack>
   );
 };

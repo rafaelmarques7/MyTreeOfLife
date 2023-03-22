@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { Select, Input, Flex, FormControl, Button } from "@chakra-ui/react";
+import {
+  Input,
+  Button,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  VStack,
+} from "@chakra-ui/react";
 import { v4 as uuidv4 } from "uuid";
 
 interface Props {
@@ -15,14 +23,13 @@ export const DropdownWithFreeText: React.FC<Props> = ({
   const [selectedValue, setSelectedValue] = useState("");
   const [textInputValue, setTextInputValue] = useState("");
 
-  const handleChange = (event) => {
-    const val = event.target.value;
+  const handleChange = (val) => {
     setSelectedValue(val);
 
     if (val === "other") {
       setTextInputValue("");
     } else {
-      setValue(event.target.value);
+      setValue(val);
     }
   };
 
@@ -31,52 +38,47 @@ export const DropdownWithFreeText: React.FC<Props> = ({
   };
 
   let options = [
-    <option key={uuidv4()} value="other">
+    <MenuItem key={uuidv4()} onClick={() => handleChange("other")}>
       Enter your own
-    </option>,
+    </MenuItem>,
   ];
 
   labelArray.forEach((label) =>
     options.push(
-      <option key={uuidv4()} value={label}>
+      <MenuItem key={uuidv4()} onClick={() => handleChange(label)}>
         {label}
-      </option>
+      </MenuItem>
     )
   );
 
   return (
-    <FormControl>
-      <Flex direction="column">
-        <Select
-          placeholder={label}
-          colorScheme="green"
-          value={selectedValue}
-          onChange={handleChange}
-          flex="1"
-          textAlign={"center"}
-        >
-          {options}
-        </Select>
-
-        {selectedValue === "other" && (
-          <>
-            <Input
-              placeholder="Enter your own value"
-              value={textInputValue}
-              onChange={handleTextInputChange}
-              mt="5"
-              textAlign={"center"}
-            />
-            <Button
-              onClick={() => setValue(textInputValue)}
-              colorScheme="green"
-              mt="5"
-            >
-              Submit
-            </Button>
-          </>
+    <>
+      <Menu>
+        {selectedValue !== "other" && (
+          <MenuButton as={Button} colorScheme="green" w="full">
+            {selectedValue || label}
+          </MenuButton>
         )}
-      </Flex>
-    </FormControl>
+        <MenuList onChange={handleChange}>{options}</MenuList>
+      </Menu>
+
+      {selectedValue === "other" && (
+        <VStack spacing={2} w="full">
+          <Input
+            placeholder="Enter your own value"
+            value={textInputValue}
+            onChange={handleTextInputChange}
+            textAlign={"center"}
+          />
+          <Button
+            onClick={() => setValue(textInputValue)}
+            colorScheme="green"
+            w={"full"}
+          >
+            Submit
+          </Button>
+        </VStack>
+      )}
+    </>
   );
 };
