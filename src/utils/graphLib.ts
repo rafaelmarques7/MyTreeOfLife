@@ -19,7 +19,6 @@ export const convertNeoToVis = (
     color: selectedElements.filter((e) => e.elementId === n.elementId)[0]
       ? "orange"
       : "white",
-    // n.properties?.name?.match(/r/i) ? "green" : "red",
     group: n.properties?.name?.match(/r/i) ? 1 : 1,
   }));
 

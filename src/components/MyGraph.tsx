@@ -17,7 +17,39 @@ const MyGraph: React.FC<PropsNetworkGraph> = ({
   const container = useRef(null);
 
   const { nodes, edges } = data;
-  const options = {};
+  const options = {
+    autoResize: true,
+    nodes: {
+      shape: "box",
+      font: {
+        size: 40,
+      },
+      borderWidth: 20,
+    },
+    edges: {
+      font: {
+        size: 24,
+      },
+    },
+    layout: {
+      randomSeed: 1, // this fixes the layout, at least until the number of nodes change
+    },
+    physics: {
+      enabled: true,
+      barnesHut: {
+        gravitationalConstant: -8000,
+        springLength: 500,
+      },
+    },
+    interaction: {
+      keyboard: {
+        enabled: true,
+        speed: { x: 10, y: 10, zoom: 0.02 },
+        bindToWindow: true,
+        autoFocus: true,
+      },
+    },
+  };
 
   useEffect(() => {
     console.log("inside use effect", { data, selectedElements });
