@@ -1,7 +1,7 @@
-import { Node, Relationship } from "neo4j-driver";
-import color from "nice-color-palettes";
-import { GraphElement } from "../interfaces";
-import { cleanLabel } from "../state/helpers";
+import { Node, Relationship } from 'neo4j-driver';
+import color from 'nice-color-palettes';
+import { GraphElement } from '../interfaces';
+import { cleanLabel } from '../state/helpers';
 
 export const createColorPalate = (numColors = 12) => {
   const allColors = color.flat();
@@ -14,10 +14,10 @@ export const colors = createColorPalate(50);
 export const selectNodeColor = (
   node: Node,
   selectedElements: GraphElement[],
-  nodeTypes: string[]
+  nodeTypes: string[],
 ) => {
   const isSelected = selectedElements.filter(
-    (e) => e.elementId === node.elementId
+    (e) => e.elementId === node.elementId,
   )[0];
 
   const indexNodeType = nodeTypes.indexOf(node.labels[0]) + 1;
@@ -29,10 +29,10 @@ export const selectNodeColor = (
 export const selectEdgeColor = (
   relationship: Relationship,
   selectedElements: GraphElement[],
-  relationshipTypes: string[]
+  relationshipTypes: string[],
 ) => {
   const isSelected = selectedElements.filter(
-    (e) => e.elementId === relationship.elementId
+    (e) => e.elementId === relationship.elementId,
   )[0];
 
   const indexNodeType =

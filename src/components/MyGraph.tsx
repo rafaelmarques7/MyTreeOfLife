@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from "react";
-import { Network } from "vis-network";
-import { GraphData, GraphElement } from "../interfaces";
+import React, { useEffect, useRef } from 'react';
+import { Network } from 'vis-network';
+import { GraphData, GraphElement } from '../interfaces';
 
 interface PropsNetworkGraph {
   data: GraphData;
@@ -13,13 +13,13 @@ const MyGraph: React.FC<PropsNetworkGraph> = ({
   selectedElements,
   onNodeClick = () => {},
 }) => {
-  console.log("inside my graph", { data, selectedElements });
+  console.log('inside my graph', { data, selectedElements });
   const container = useRef(null);
 
   const { nodes, edges } = data;
 
   useEffect(() => {
-    console.log("inside use effect", { data, selectedElements });
+    console.log('inside use effect', { data, selectedElements });
 
     let network;
     if (container.current) {
@@ -27,18 +27,18 @@ const MyGraph: React.FC<PropsNetworkGraph> = ({
       network = new Network(container.current, { nodes, edges }, options);
     }
 
-    network?.on("click", function (params) {
+    network?.on('click', function (params) {
       onNodeClick(params);
     });
   }, [data, selectedElements]);
 
-  return <div ref={container} style={{ height: "93vh", width: "100vh" }} />;
+  return <div ref={container} style={{ height: '93vh', width: '100vh' }} />;
 };
 
 const options = {
   autoResize: true,
   nodes: {
-    shape: "box",
+    shape: 'box',
     font: {
       size: 40,
     },

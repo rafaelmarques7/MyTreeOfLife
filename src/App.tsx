@@ -1,18 +1,18 @@
-import React, { useEffect } from "react";
-import { Flex } from "@chakra-ui/react";
-import { Header } from "./components/Header";
-import { NetworkGraph } from "./components/MyGraph";
-import { useSelector } from "react-redux";
-import { StateApp } from "./state/reducers";
-import { getAllElements, handleGraphClick } from "./state/actions";
-import { useAppDispatch } from "./hooks";
-import { ActionContainer } from "./components/ActionContainer";
+import React, { useEffect } from 'react';
+import { Flex } from '@chakra-ui/react';
+import { Header } from './components/Header';
+import { NetworkGraph } from './components/MyGraph';
+import { useSelector } from 'react-redux';
+import { StateApp } from './state/reducers';
+import { getAllElements, handleGraphClick } from './state/actions';
+import { useAppDispatch } from './hooks';
+import { ActionContainer } from './components/ActionContainer';
 
 function App() {
   const dispatch = useAppDispatch();
 
   const { dataGraph, selectedElements } = useSelector(
-    (state: StateApp) => state
+    (state: StateApp) => state,
   );
 
   useEffect(() => {
@@ -23,7 +23,7 @@ function App() {
   }, []);
 
   return (
-    <Flex direction={"column"}>
+    <Flex direction={'column'}>
       <Header />
       <Flex bg="gray.200">
         <NetworkGraph

@@ -1,5 +1,5 @@
-import { SmallCloseIcon } from "@chakra-ui/icons";
-import { useState } from "react";
+import { SmallCloseIcon } from '@chakra-ui/icons';
+import { useState } from 'react';
 import {
   Button,
   Modal,
@@ -9,7 +9,7 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-} from "@chakra-ui/react";
+} from '@chakra-ui/react';
 
 interface Props {
   onDelete?: (index: number) => void;
@@ -21,8 +21,8 @@ interface Props {
 export const DeleteButtonWithModal: React.FC<Props> = ({
   onDelete = () => {},
   index = 0,
-  modalTitle = "Delete Item",
-  modalBody = "Are you sure you want to delete this item?",
+  modalTitle = 'Delete Item',
+  modalBody = 'Are you sure you want to delete this item?',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const onClose = () => setIsOpen(false);

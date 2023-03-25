@@ -1,9 +1,9 @@
-import { Button, Container, Select, Text } from "@chakra-ui/react";
-import { Node, Relationship } from "neo4j-driver";
-import { useState } from "react";
-import { nodeToString, sortList } from "../utils/graphLib";
-import { DropdownWithFreeText } from "./DropdownWithFreeText";
-import { v4 as uuidv4 } from "uuid";
+import { Button, Container, Select, Text } from '@chakra-ui/react';
+import { Node, Relationship } from 'neo4j-driver';
+import { useState } from 'react';
+import { nodeToString, sortList } from '../utils/graphLib';
+import { DropdownWithFreeText } from './DropdownWithFreeText';
+import { v4 as uuidv4 } from 'uuid';
 
 interface Props {
   nodes: Node[];
@@ -18,7 +18,7 @@ export const NewRelationshipForm: React.FC<Props> = ({
 }) => {
   const [from, setFrom] = useState<Node>();
   const [to, setTo] = useState<Node>();
-  const [relationship, setRelationship] = useState<string>("");
+  const [relationship, setRelationship] = useState<string>('');
 
   const allLabels = relationshipList.map((r) => r.type);
   const uniqueLabels = new Set(allLabels);
@@ -40,15 +40,15 @@ export const NewRelationshipForm: React.FC<Props> = ({
 
   return (
     <Container maxW="xl">
-      <Text fontWeight={"bold"}>Create a new Relationship:</Text>
+      <Text fontWeight={'bold'}>Create a new Relationship:</Text>
       <DropdownNodes
-        label={from ? from?.properties?.name : "From"}
+        label={from ? from?.properties?.name : 'From'}
         nodes={nodes}
         value={from?.properties?.name}
         onChange={(e) => handleFromSubmit(e)}
       />
       <DropdownNodes
-        label={to ? to?.properties?.name : "To"}
+        label={to ? to?.properties?.name : 'To'}
         nodes={nodes}
         value={to?.properties?.name}
         onChange={handleToSubmit}
@@ -70,7 +70,7 @@ export const NewRelationshipForm: React.FC<Props> = ({
 const DropdownNodes = ({ label, nodes, value, onChange }) => {
   return (
     <Select
-      maxW={"500px"}
+      maxW={'500px'}
       placeholder={label}
       value={value}
       onChange={onChange}

@@ -1,5 +1,5 @@
-import { Flex, Heading, IconButton } from "@chakra-ui/react";
-import { FaTree } from "react-icons/fa";
+import { Flex, Heading, IconButton } from '@chakra-ui/react';
+import { FaTree } from 'react-icons/fa';
 
 export const Header = () => {
   return (

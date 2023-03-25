@@ -1,22 +1,22 @@
-import { Node, Relationship } from "neo4j-driver";
+import { Node, Relationship } from 'neo4j-driver';
 import {
   EdgeGraphData,
   GraphData,
   GraphElement,
   LabelInfo,
   NodeGraphData,
-} from "../interfaces";
+} from '../interfaces';
 import {
   cleanLabel,
   existingNodeTypes,
   existingRelationshipLabels,
-} from "../state/helpers";
-import { selectEdgeColor, selectNodeColor } from "./colors";
+} from '../state/helpers';
+import { selectEdgeColor, selectNodeColor } from './colors';
 
 export const convertNeoToVis = (
   nodesNeo: Node[],
   edgesNeo: Relationship[],
-  selectedElements: GraphElement[] = []
+  selectedElements: GraphElement[] = [],
 ): GraphData => {
   const nodeTypes = existingNodeTypes(nodesNeo);
   const relationshipTypes = existingRelationshipLabels(edgesNeo);
@@ -64,10 +64,10 @@ export function getNodesLabels(nodes: Node[], sort = true): LabelInfo[] {
 
 export function getRelationshionLabel(
   rel: Relationship,
-  nodes: Node[]
+  nodes: Node[],
 ): LabelInfo {
   const type = rel.type;
-  let [from, to] = ["", ""];
+  let [from, to] = ['', ''];
   nodes.forEach((n) => {
     if (n.elementId === rel.startNodeElementId) {
       from = n.properties?.name;
@@ -87,7 +87,7 @@ export function getRelationshionLabel(
 export const getRelationshionLabels = (
   relList: Relationship[],
   nodes: Node[],
-  sort = true
+  sort = true,
 ): LabelInfo[] => {
   const relInfo = relList.map((rel) => getRelationshionLabel(rel, nodes));
   if (sort) {

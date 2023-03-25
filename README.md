@@ -2,7 +2,8 @@
 
 > Website is live: http://mytol.s3-website-eu-west-1.amazonaws.com/
 
-This app uses a Neo4j Graph database, and allows the user to manipulate the database using commands input through the UI, built in React.
+This app uses a Neo4j Graph database, and allows the user to manipulate the
+database using commands input through the UI, built in React.
 
 <img src="./public/ui.png" alt="alt text" width="600"/>
 
@@ -15,17 +16,22 @@ This app uses a Neo4j Graph database, and allows the user to manipulate the data
 
 ## Connection to neo4j
 
-- Connection to Neo4j requires the `.env` variables to be set (see [env.ts](./src/env.ts) file)
-- This app can run without a connection to Neo4j. In this case, it uses some dummy data.
+- Connection to Neo4j requires the `.env` variables to be set (see
+  [env.ts](./src/env.ts) file)
+- This app can run without a connection to Neo4j. In this case, it uses some
+  dummy data.
 
 ## ToDo's
 
 Error handling and user warnings
 
-- Create action container with 4 buttons: create/delete nodes, create/delete relationships
+- Create action container with 4 buttons: create/delete nodes, create/delete
+  relationships
   - the new node opens the dialog we already have
-  - the delete node makes the user select nodes by clicking on them on the screen
-  - the delete node makes the user delete relationships by clicking on them on the screen
+  - the delete node makes the user select nodes by clicking on them on the
+    screen
+  - the delete node makes the user delete relationships by clicking on them on
+    the screen
   - the create relationship allows the users to select:
     - a relationship label, by entering their own or choosing from a list
     - a starting node, by clicking on it first

@@ -1,22 +1,22 @@
-import React from "react";
-import { SmallCloseIcon } from "@chakra-ui/icons";
-import { Text, Flex, Container } from "@chakra-ui/react";
-import { enumUserAction, GraphElement } from "../interfaces";
-import { v4 as uuidv4 } from "uuid";
-import { useAppDispatch, useAppSelector } from "../hooks";
-import { handleRemoveFromSelection } from "../state/actions";
-import { StateApp } from "../state/reducers";
-import { selectActionTitle } from "../state/helpers";
+import React from 'react';
+import { SmallCloseIcon } from '@chakra-ui/icons';
+import { Text, Flex, Container } from '@chakra-ui/react';
+import { enumUserAction, GraphElement } from '../interfaces';
+import { v4 as uuidv4 } from 'uuid';
+import { useAppDispatch, useAppSelector } from '../hooks';
+import { handleRemoveFromSelection } from '../state/actions';
+import { StateApp } from '../state/reducers';
+import { selectActionTitle } from '../state/helpers';
 
 export const SelectionList: React.FC = () => {
   const { currentAction, selectedElements } = useAppSelector(
-    (state: StateApp) => state
+    (state: StateApp) => state,
   );
 
   const title = selectActionTitle(currentAction, selectedElements);
 
   return (
-    <Flex alignItems={"center"} direction="column" pt={3}>
+    <Flex alignItems={'center'} direction="column" pt={3}>
       <SelectionTitle title={title} />
       <SelectionBody
         selectedElements={selectedElements}
@@ -28,7 +28,7 @@ export const SelectionList: React.FC = () => {
 
 const SelectionTitle = ({ title }) => (
   <Container>
-    <Text textAlign={"center"}>{title}</Text>
+    <Text textAlign={'center'}>{title}</Text>
   </Container>
 );
 
@@ -68,8 +68,8 @@ export const SelectionListItem: React.FC<{ el: GraphElement }> = ({ el }) => {
   const dispatch = useAppDispatch();
 
   return (
-    <Flex w={"100%"} alignItems={"center"} justifyContent="space-between">
-      <Text fontSize={"sm"} p="1">
+    <Flex w={'100%'} alignItems={'center'} justifyContent="space-between">
+      <Text fontSize={'sm'} p="1">
         {el.label}
       </Text>
       <SmallCloseIcon onClick={() => dispatch(handleRemoveFromSelection(el))} />

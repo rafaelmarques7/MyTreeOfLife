@@ -1,9 +1,9 @@
-import { applyMiddleware, compose, createStore } from "redux";
-import thunkMiddleware from "redux-thunk";
+import { applyMiddleware, compose, createStore } from 'redux';
+import thunkMiddleware from 'redux-thunk';
 
-import monitorReducersEnhancer from "./middleware/monitorReducers";
-import loggerMiddleware from "./middleware/logger";
-import rootReducer from "./reducers";
+import monitorReducersEnhancer from './middleware/monitorReducers';
+import loggerMiddleware from './middleware/logger';
+import rootReducer from './reducers';
 
 function configureStore() {
   const middlewares = [loggerMiddleware, thunkMiddleware];

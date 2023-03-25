@@ -1,5 +1,5 @@
-import { Driver, Node } from "neo4j-driver";
-import { enumUserAction, EventGraphClick, GraphElement } from "../interfaces";
+import { Driver, Node } from 'neo4j-driver';
+import { enumUserAction, EventGraphClick, GraphElement } from '../interfaces';
 import {
   createNewNodes,
   createRelationship,
@@ -8,19 +8,19 @@ import {
   deleteNodes,
   queryAllElements,
   queryNodeList,
-} from "../utils/dbFunctions";
-import { convertNeoToVis } from "../utils/graphLib";
-import { extractEdgeFromGraph, extractNodeFromGraph } from "./helpers";
-import { StateApp } from "./reducers";
+} from '../utils/dbFunctions';
+import { convertNeoToVis } from '../utils/graphLib';
+import { extractEdgeFromGraph, extractNodeFromGraph } from './helpers';
+import { StateApp } from './reducers';
 
 export const addNode = (nodeNames: string[], label: string) => {
   return async (dispatch, getState) => {
     const driver = getState().driver;
 
     const res = await createNewNodes(driver, nodeNames, label);
-    const nodeList: Node[] = res?.records.map((r) => r.get("nodes"))[0] || [];
+    const nodeList: Node[] = res?.records.map((r) => r.get('nodes'))[0] || [];
 
-    dispatch({ type: "SET_NODE_LIST", payload: nodeList });
+    dispatch({ type: 'SET_NODE_LIST', payload: nodeList });
     dispatch(getAllElements());
   };
 };
@@ -29,7 +29,7 @@ export const getNodeList = (driver: Driver) => {
   return async (dispatch) => {
     const nodeList = await queryNodeList(driver);
 
-    dispatch({ type: "SET_NODE_LIST", payload: nodeList });
+    dispatch({ type: 'SET_NODE_LIST', payload: nodeList });
   };
 };
 
@@ -41,17 +41,17 @@ export const getAllElements = () => {
     const dataGraph = convertNeoToVis(
       nodeList,
       relationshipList,
-      selectedElements
+      selectedElements,
     );
 
-    dispatch({ type: "SET_NODE_LIST", payload: nodeList });
-    dispatch({ type: "SET_RELATIONSHIP_LIST", payload: relationshipList });
-    dispatch({ type: "SET_DATA_GRAPH", payload: dataGraph });
+    dispatch({ type: 'SET_NODE_LIST', payload: nodeList });
+    dispatch({ type: 'SET_RELATIONSHIP_LIST', payload: relationshipList });
+    dispatch({ type: 'SET_DATA_GRAPH', payload: dataGraph });
   };
 };
 
 export const handleGraphClick = (event: EventGraphClick) => {
-  console.log("handleGraphClick", event);
+  console.log('handleGraphClick', event);
 
   return async (dispatch, getState) => {
     const isRelevantClick = event.nodes.length > 0 || event.edges.length > 0;
@@ -61,18 +61,18 @@ export const handleGraphClick = (event: EventGraphClick) => {
 
     const { elementType, element, elementExists } = getElementFromClick(
       event,
-      state
+      state,
     );
 
     if (elementExists) return () => {};
 
     const isValidAction =
       (state.currentAction === enumUserAction.deleteNodes &&
-        elementType === "node") ||
+        elementType === 'node') ||
       (state.currentAction === enumUserAction.deleteRelationships &&
-        elementType === "relationship") ||
+        elementType === 'relationship') ||
       (state.currentAction === enumUserAction.createRelationships &&
-        elementType === "node");
+        elementType === 'node');
 
     if (!isValidAction) return () => {};
 
@@ -81,39 +81,39 @@ export const handleGraphClick = (event: EventGraphClick) => {
     const dataGraph = convertNeoToVis(
       state.nodeList,
       state.relationshipList,
-      newSelectedElements
+      newSelectedElements,
     );
 
-    dispatch({ type: "SET_SELECTED_ELEMENTS", payload: newSelectedElements });
-    dispatch({ type: "SET_DATA_GRAPH", payload: dataGraph });
+    dispatch({ type: 'SET_SELECTED_ELEMENTS', payload: newSelectedElements });
+    dispatch({ type: 'SET_DATA_GRAPH', payload: dataGraph });
   };
 };
 
 interface ElementFromClick {
-  elementType: "node" | "relationship";
+  elementType: 'node' | 'relationship';
   element: GraphElement;
   elementExists: boolean;
 }
 
 export const getElementFromClick = (
   event: EventGraphClick,
-  state: StateApp
+  state: StateApp,
 ): ElementFromClick => {
-  const elementType = event.nodes.length > 0 ? "node" : "relationship";
+  const elementType = event.nodes.length > 0 ? 'node' : 'relationship';
 
   const element =
-    elementType === "node"
+    elementType === 'node'
       ? extractNodeFromGraph(event, state.nodeList)
       : extractEdgeFromGraph(
           event,
           state.dataGraph,
           state.relationshipList,
-          state.nodeList
+          state.nodeList,
         );
 
   // check if element exists and don't re-add it if it does
   const elementExists = state.selectedElements.some(
-    (se) => se?.elementId === element?.elementId
+    (se) => se?.elementId === element?.elementId,
   );
 
   return { elementType, element, elementExists };
@@ -124,10 +124,10 @@ export const handleRemoveFromSelection = (element: GraphElement) => {
     const { selectedElements } = getState() as StateApp;
 
     const newSelectedElements = selectedElements.filter(
-      (el) => el.elementId !== element.elementId
+      (el) => el.elementId !== element.elementId,
     );
 
-    dispatch({ type: "SET_SELECTED_ELEMENTS", payload: newSelectedElements });
+    dispatch({ type: 'SET_SELECTED_ELEMENTS', payload: newSelectedElements });
     dispatch(getAllElements());
   };
 };
@@ -142,27 +142,27 @@ export const handleCreateRelationship = () => {
     const nodes = selectedElements.map((el) => el.element as Node);
 
     await createRelationships(driver, newRelationshipLabel, nodes);
-    dispatch({ type: "SET_SELECTED_ELEMENTS", payload: [] });
-    dispatch({ type: "SET_NEW_RELATIONSHIP_LABEL", payload: "" });
+    dispatch({ type: 'SET_SELECTED_ELEMENTS', payload: [] });
+    dispatch({ type: 'SET_NEW_RELATIONSHIP_LABEL', payload: '' });
   };
 };
 
 export const handleSetActionType = (actionType: enumUserAction) => {
-  console.log("handleSetActionType", actionType);
+  console.log('handleSetActionType', actionType);
 
   return async (dispatch, getState) => {
     const { currentAction } = getState() as StateApp;
 
     const isFirstAction = currentAction === enumUserAction.none;
-    console.log("isFirstAction", isFirstAction);
+    console.log('isFirstAction', isFirstAction);
 
     if (isFirstAction) {
-      dispatch({ type: "SET_CURRENT_ACTION", payload: actionType });
+      dispatch({ type: 'SET_CURRENT_ACTION', payload: actionType });
       return;
     }
 
     if (actionType === enumUserAction.none) {
-      dispatch({ type: "SET_SELECTED_ELEMENTS", payload: [] });
+      dispatch({ type: 'SET_SELECTED_ELEMENTS', payload: [] });
     }
 
     switch (currentAction) {
@@ -179,8 +179,8 @@ export const handleSetActionType = (actionType: enumUserAction) => {
         break;
     }
 
-    dispatch({ type: "SET_CURRENT_ACTION", payload: enumUserAction.none });
-    dispatch({ type: "SET_SELECTED_ELEMENTS", payload: [] });
+    dispatch({ type: 'SET_CURRENT_ACTION', payload: enumUserAction.none });
+    dispatch({ type: 'SET_SELECTED_ELEMENTS', payload: [] });
     dispatch(getAllElements());
   };
 };
@@ -191,11 +191,11 @@ export const handleDeleteNodes = () => {
 
     // extract the nodes and relationships from the selected elements
     const nodesToDelete = selectedElements.map((e) =>
-      nodeList.find((n) => n.elementId === e.elementId)
+      nodeList.find((n) => n.elementId === e.elementId),
     ) as unknown as Node[];
 
     await deleteNodes(driver, nodesToDelete);
-    dispatch({ type: "SET_SELECTED_ELEMENTS", payload: [] });
+    dispatch({ type: 'SET_SELECTED_ELEMENTS', payload: [] });
     dispatch(getAllElements());
   };
 };
@@ -210,12 +210,12 @@ export const handleDeleteRelationships = () => {
     // ) as unknown as Node[];
 
     // await deleteNodes(driver, nodesToDelete);
-    dispatch({ type: "SET_SELECTED_ELEMENTS", payload: [] });
+    dispatch({ type: 'SET_SELECTED_ELEMENTS', payload: [] });
     // dispatch(getAllElements());
   };
 };
 
 export const handleSetNewRelationshipLabel = (label: string) => ({
-  type: "SET_NEW_RELATIONSHIP_LABEL",
+  type: 'SET_NEW_RELATIONSHIP_LABEL',
   payload: label,
 });

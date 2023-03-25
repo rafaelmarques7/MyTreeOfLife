@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { SmallCloseIcon } from "@chakra-ui/icons";
+import { useState } from 'react';
+import { SmallCloseIcon } from '@chakra-ui/icons';
 import {
   Button,
   Modal,
@@ -12,11 +12,11 @@ import {
   Text,
   Flex,
   FormLabel,
-} from "@chakra-ui/react";
-import { FormCustom } from "./FormCustom";
-import { DropdownWithFreeText } from "./DropdownWithFreeText";
-import { Node } from "neo4j-driver";
-import { sortList } from "../utils/graphLib";
+} from '@chakra-ui/react';
+import { FormCustom } from './FormCustom';
+import { DropdownWithFreeText } from './DropdownWithFreeText';
+import { Node } from 'neo4j-driver';
+import { sortList } from '../utils/graphLib';
 
 interface Props {
   nodes: Node[];
@@ -28,15 +28,15 @@ interface Props {
 export const ButtonNewNode: React.FC<Props> = ({
   nodes,
   onSubmit = () => {},
-  buttonLabel = "New node",
-  modalTitle = "Create new node(s)",
+  buttonLabel = 'New node',
+  modalTitle = 'Create new node(s)',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const onClose = () => setIsOpen(false);
 
   const onCreateNodes = (nodeNames: string[], label: string) => {
-    console.log("handleNodeCreate", nodeNames, label);
+    console.log('handleNodeCreate', nodeNames, label);
 
     onSubmit(nodeNames, label);
     setIsOpen(false);
@@ -85,7 +85,7 @@ export const FormNewNode: React.FC<PropsFormNewNode> = ({
   onClose,
 }) => {
   const [nodeNames, setNodesNames] = useState<string[]>([]);
-  const [label, setLabel] = useState("");
+  const [label, setLabel] = useState('');
 
   const allLabels = nodes.map((node) => node.labels[0]);
   const uniqueLabels = new Set(allLabels);
@@ -111,19 +111,19 @@ export const FormNewNode: React.FC<PropsFormNewNode> = ({
       {nodeNames.map((name, index) => {
         return (
           <Flex
-            alignItems={"center"}
+            alignItems={'center'}
             key={index}
             justifyContent="space-between"
-            p={"1em 1em 0 1em"}
+            p={'1em 1em 0 1em'}
           >
-            <Text pl={"1.5em"}>{name}</Text>
+            <Text pl={'1.5em'}>{name}</Text>
             <SmallCloseIcon onClick={() => onNodeDelete(index)} />
           </Flex>
         );
       })}
 
       {/* Node label  */}
-      <Flex direction={"column"} pt={5} pl={1}>
+      <Flex direction={'column'} pt={5} pl={1}>
         <FormLabel>Label (Person, Book, etc.):</FormLabel>
         <DropdownWithFreeText
           label="Label"
@@ -154,15 +154,15 @@ interface PropsFormSingleNode {
 }
 
 export const FormSingleNode: React.FC<PropsFormSingleNode> = ({ onSubmit }) => {
-  const [name, setName] = useState("");
+  const [name, setName] = useState('');
 
   const handleSubmit = (name: string) => {
-    console.log("handleSubmit", name);
+    console.log('handleSubmit', name);
 
-    if (name === "") return;
+    if (name === '') return;
 
     onSubmit(name);
-    setName("");
+    setName('');
   };
 
   return (

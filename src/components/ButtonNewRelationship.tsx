@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { SmallCloseIcon } from "@chakra-ui/icons";
+import { useState } from 'react';
+import { SmallCloseIcon } from '@chakra-ui/icons';
 import {
   Button,
   Modal,
@@ -12,26 +12,26 @@ import {
   Text,
   Flex,
   FormLabel,
-} from "@chakra-ui/react";
-import { FormCustom } from "./FormCustom";
-import { DropdownWithFreeText } from "./DropdownWithFreeText";
-import { Node } from "neo4j-driver";
-import { sortList } from "../utils/graphLib";
-import { useDispatch } from "react-redux";
-import { useAppDispatch, useAppSelector } from "../hooks";
+} from '@chakra-ui/react';
+import { FormCustom } from './FormCustom';
+import { DropdownWithFreeText } from './DropdownWithFreeText';
+import { Node } from 'neo4j-driver';
+import { sortList } from '../utils/graphLib';
+import { useDispatch } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../hooks';
 import {
   handleSetActionType,
   handleSetNewRelationshipLabel,
-} from "../state/actions";
-import { StateApp } from "../state/reducers";
-import { existingRelationshipLabels } from "../state/helpers";
-import { enumUserAction } from "../interfaces";
+} from '../state/actions';
+import { StateApp } from '../state/reducers';
+import { existingRelationshipLabels } from '../state/helpers';
+import { enumUserAction } from '../interfaces';
 
 export const ButtonNewRelationship: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const { relationshipList, newRelationshipLabel } = useAppSelector(
-    (state: StateApp) => state
+    (state: StateApp) => state,
   );
 
   const labels = existingRelationshipLabels(relationshipList);
@@ -43,13 +43,13 @@ export const ButtonNewRelationship: React.FC = () => {
   const handleButtonClick = () => {
     dispatch(handleSetActionType(enumUserAction.createRelationships));
 
-    if (newRelationshipLabel === "") {
+    if (newRelationshipLabel === '') {
       setIsOpen(true);
     }
   };
 
   const handleFormSubmit = (s: string) => {
-    console.log("inside form submit");
+    console.log('inside form submit');
     dispatch(handleSetNewRelationshipLabel(s));
   };
 
@@ -78,7 +78,7 @@ export const ButtonNewRelationship: React.FC = () => {
             />
           </ModalBody>
           <ModalFooter justifyContent="flex-end">
-            <Button onClick={onClose} width={"10em"}>
+            <Button onClick={onClose} width={'10em'}>
               Submit
             </Button>
           </ModalFooter>

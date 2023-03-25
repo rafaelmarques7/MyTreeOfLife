@@ -1,5 +1,5 @@
-import { Flex, FormControl, Input } from "@chakra-ui/react";
-import { Dispatch, SetStateAction } from "react";
+import { Flex, FormControl, Input } from '@chakra-ui/react';
+import { Dispatch, SetStateAction } from 'react';
 
 interface Props {
   label: string;
@@ -15,14 +15,14 @@ export const FormCustom: React.FC<Props> = ({
   onSubmit,
 }) => {
   const handleKeyDown = (event) => {
-    if (event?.key === "Enter") {
+    if (event?.key === 'Enter') {
       onSubmit();
     }
   };
 
   return (
     <FormControl>
-      <Flex alignItems="center" maxW={"509px"}>
+      <Flex alignItems="center" maxW={'509px'}>
         <Input
           placeholder={label}
           value={value}

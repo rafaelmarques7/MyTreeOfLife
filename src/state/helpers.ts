@@ -1,49 +1,49 @@
-import { Node, Relationship } from "neo4j-driver";
+import { Node, Relationship } from 'neo4j-driver';
 import {
   enumUserAction,
   EventGraphClick,
   GraphData,
   GraphElement,
-} from "../interfaces";
+} from '../interfaces';
 import {
   nodeToString,
   getRelationshionLabel,
   sortList,
-} from "../utils/graphLib";
+} from '../utils/graphLib';
 
 export const selectActionTitle = (
   actionType: enumUserAction,
-  selectedElements: GraphElement[]
+  selectedElements: GraphElement[],
 ): string => {
   switch (actionType) {
     case enumUserAction.none:
-      return "";
+      return '';
     case enumUserAction.deleteNodes:
-      return "Select nodes to delete";
+      return 'Select nodes to delete';
     case enumUserAction.createRelationships:
       if (selectedElements.length === 0) {
-        return "Select the starting node";
+        return 'Select the starting node';
       } else {
-        return "Select nodes to apply";
+        return 'Select nodes to apply';
       }
 
     case enumUserAction.deleteRelationships:
-      return "Select relationships to delete";
+      return 'Select relationships to delete';
     default:
-      return "";
+      return '';
   }
 };
 
 export const extractNodeFromGraph = (
   event: EventGraphClick,
-  nodeList: Node[]
+  nodeList: Node[],
 ): GraphElement => {
   const nodeId = event.nodes[0];
   const node = nodeList.filter((n) => n.elementId === nodeId)[0];
   const label = nodeToString(node);
 
   return {
-    elementType: "node",
+    elementType: 'node',
     element: node,
     label: label,
     elementId: node.elementId,
@@ -54,7 +54,7 @@ export const extractEdgeFromGraph = (
   event: EventGraphClick,
   dataGraph: GraphData,
   relationshipList: Relationship[],
-  nodeList: Node[]
+  nodeList: Node[],
 ): GraphElement => {
   const edgeId = event.edges[0];
   const edge = dataGraph.edges.filter((n) => n?.id === edgeId)[0];
@@ -63,13 +63,13 @@ export const extractEdgeFromGraph = (
     (r) =>
       r.startNodeElementId === edge.from &&
       r.endNodeElementId === edge.to &&
-      r.type === edge.label
+      r.type === edge.label,
   )[0];
 
   const label = getRelationshionLabel(relationship, nodeList);
 
   return {
-    elementType: "relationship",
+    elementType: 'relationship',
     element: relationship,
     label: label.label,
     elementId: relationship.elementId,
@@ -77,7 +77,7 @@ export const extractEdgeFromGraph = (
 };
 
 export const existingRelationshipLabels = (
-  relationshipList: Relationship[]
+  relationshipList: Relationship[],
 ) => {
   const allLabels = relationshipList.map((r) => r.type);
   const allLabelsClean = allLabels.map((l) => cleanLabel(l));
@@ -87,7 +87,7 @@ export const existingRelationshipLabels = (
   return labels;
 };
 
-export const cleanLabel = (s: string) => s.replace(/_/g, " ");
+export const cleanLabel = (s: string) => s.replace(/_/g, ' ');
 
 export const existingNodeTypes = (nodes: Node[]) => {
   const allLabels = nodes.map((n) => n.labels[0]);

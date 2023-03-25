@@ -1,4 +1,4 @@
-import { Node, Relationship } from "neo4j-driver";
+import { Node, Relationship } from 'neo4j-driver';
 
 export interface PersonNode {
   name: string;
@@ -10,7 +10,7 @@ export interface LabelInfo {
 }
 
 export interface GraphElement extends LabelInfo {
-  elementType: "node" | "relationship";
+  elementType: 'node' | 'relationship';
   element: Node | Relationship;
 }
 
@@ -40,8 +40,8 @@ export interface EventGraphClick {
 }
 
 export enum enumUserAction {
-  "none",
-  "createRelationships",
-  "deleteRelationships",
-  "deleteNodes",
+  'none',
+  'createRelationships',
+  'deleteRelationships',
+  'deleteNodes',
 }
