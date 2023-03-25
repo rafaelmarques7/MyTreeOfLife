@@ -80,8 +80,18 @@ export const existingRelationshipLabels = (
   relationshipList: Relationship[]
 ) => {
   const allLabels = relationshipList.map((r) => r.type);
-  const allLabelsClean = allLabels.map((l) => l.replace(/_/g, " "));
+  const allLabelsClean = allLabels.map((l) => cleanLabel(l));
   const uniqueLabels = new Set(allLabelsClean);
+  const labels = sortList(Array.from(uniqueLabels));
+
+  return labels;
+};
+
+export const cleanLabel = (s: string) => s.replace(/_/g, " ");
+
+export const existingNodeTypes = (nodes: Node[]) => {
+  const allLabels = nodes.map((n) => n.labels[0]);
+  const uniqueLabels = new Set(allLabels);
   const labels = sortList(Array.from(uniqueLabels));
 
   return labels;

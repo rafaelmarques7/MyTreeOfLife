@@ -18,8 +18,8 @@ export interface NodeGraphData {
   id: string;
   label: string;
   title: string;
-  group: number;
-  color: string;
+  group?: number;
+  color?: string;
 }
 
 export interface EdgeGraphData {

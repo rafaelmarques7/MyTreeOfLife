@@ -6,26 +6,33 @@ import {
   LabelInfo,
   NodeGraphData,
 } from "../interfaces";
+import {
+  cleanLabel,
+  existingNodeTypes,
+  existingRelationshipLabels,
+} from "../state/helpers";
+import { selectEdgeColor, selectNodeColor } from "./colors";
 
 export const convertNeoToVis = (
   nodesNeo: Node[],
   edgesNeo: Relationship[],
   selectedElements: GraphElement[] = []
 ): GraphData => {
+  const nodeTypes = existingNodeTypes(nodesNeo);
+  const relationshipTypes = existingRelationshipLabels(edgesNeo);
+
   const nodes: NodeGraphData[] = nodesNeo.map((n) => ({
     id: n.elementId,
     label: n.properties?.name,
     title: n.properties?.name,
-    color: selectedElements.filter((e) => e.elementId === n.elementId)[0]
-      ? "orange"
-      : "white",
-    group: n.properties?.name?.match(/r/i) ? 1 : 1,
+    color: selectNodeColor(n, selectedElements, nodeTypes),
   }));
 
   const edges: EdgeGraphData[] = edgesNeo.map((r) => ({
     from: r.startNodeElementId,
     to: r.endNodeElementId,
-    label: r.type,
+    label: cleanLabel(r.type),
+    color: selectEdgeColor(r, selectedElements, relationshipTypes),
   }));
 
   const graph: GraphData = {

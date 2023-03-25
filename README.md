@@ -44,28 +44,4 @@ Error handling and user warnings
 
 ## useful links:
 
-```
-it is possible to fix nodes and edges, see:
-http://127.0.0.1:58253/examples/network/edgeStyles/arrowAlignment
-
-edge coloring and hiding (visibility toggle):
-http://127.0.0.1:58253/examples/network/data/dynamicFiltering
-
-node color and shapes:
-http://127.0.0.1:58253/examples/network/edgeStyles/colors
-
-its possible to react to click and drag events:
-http://127.0.0.1:58253/examples/network/events/interactionEvents
-
-html, including images, inside nodes
-http://127.0.0.1:58253/examples/network/labels/multilineText
-http://127.0.0.1:58253/examples/network/labels/labelMultifont
-http://127.0.0.1:58253/examples/network/nodeStyles/circularImages
-
-it event supports clusters of cluster, relevant for visualizing large networks:
-http://127.0.0.1:58253/examples/network/other/clusteringByZoom
-
-keyboard controls:
-http://127.0.0.1:58253/examples/network/other/navigation
-
-```
+- vis network documentation: https://visjs.github.io/vis-network/docs/network/
