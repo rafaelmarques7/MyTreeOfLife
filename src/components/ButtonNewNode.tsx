@@ -159,6 +159,8 @@ export const FormSingleNode: React.FC<PropsFormSingleNode> = ({ onSubmit }) => {
   const handleSubmit = (name: string) => {
     console.log("handleSubmit", name);
 
+    if (name === "") return;
+
     onSubmit(name);
     setName("");
   };

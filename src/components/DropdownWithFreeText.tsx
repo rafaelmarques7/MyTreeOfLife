@@ -35,6 +35,7 @@ export const DropdownWithFreeText: React.FC<Props> = ({
 
   const handleTextInputChange = (event) => {
     setTextInputValue(event.target.value);
+    setValue(textInputValue);
   };
 
   let options = [
@@ -70,13 +71,6 @@ export const DropdownWithFreeText: React.FC<Props> = ({
             onChange={handleTextInputChange}
             textAlign={"center"}
           />
-          <Button
-            onClick={() => setValue(textInputValue)}
-            colorScheme="green"
-            w={"full"}
-          >
-            Submit
-          </Button>
         </VStack>
       )}
     </>
