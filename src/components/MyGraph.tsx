@@ -32,7 +32,7 @@ const MyGraph: React.FC<PropsNetworkGraph> = ({
     });
   }, [data, selectedElements]);
 
-  return <div ref={container} style={{ height: '93vh', width: '100vh' }} />;
+  return <div ref={container} style={{ height: '93vh', width: '100vw' }} />;
 };
 
 const options = {
