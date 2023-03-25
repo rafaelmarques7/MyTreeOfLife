@@ -94,6 +94,8 @@ export const createRelationships = async (
   const uuids = nodes.map((_) => generateRandomString(16));
   const [firstNode, ...otherNodes] = nodes;
 
+  const cleanRelationshipType = relationshipType.replace(/ /g, "_");
+
   const matchClauses = otherNodes.map(
     (node, index) =>
       `MATCH (${uuids[index + 1]}:${node.labels[0]} {name: '${
@@ -102,7 +104,7 @@ export const createRelationships = async (
   );
   const createClauses = otherNodes.map(
     (_, index) =>
-      `CREATE (${uuids[0]})-[:${relationshipType}]->(${uuids[index + 1]})`
+      `CREATE (${uuids[0]})-[:${cleanRelationshipType}]->(${uuids[index + 1]})`
   );
 
   const query = `

@@ -142,6 +142,8 @@ export const handleCreateRelationship = () => {
     const nodes = selectedElements.map((el) => el.element as Node);
 
     await createRelationships(driver, newRelationshipLabel, nodes);
+    dispatch({ type: "SET_SELECTED_ELEMENTS", payload: [] });
+    dispatch({ type: "SET_NEW_RELATIONSHIP_LABEL", payload: "" });
   };
 };
 

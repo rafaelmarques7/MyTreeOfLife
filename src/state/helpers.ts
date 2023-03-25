@@ -80,7 +80,8 @@ export const existingRelationshipLabels = (
   relationshipList: Relationship[]
 ) => {
   const allLabels = relationshipList.map((r) => r.type);
-  const uniqueLabels = new Set(allLabels);
+  const allLabelsClean = allLabels.map((l) => l.replace(/_/g, " "));
+  const uniqueLabels = new Set(allLabelsClean);
   const labels = sortList(Array.from(uniqueLabels));
 
   return labels;

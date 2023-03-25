@@ -35,7 +35,7 @@ export const DropdownWithFreeText: React.FC<Props> = ({
 
   const handleTextInputChange = (event) => {
     setTextInputValue(event.target.value);
-    setValue(textInputValue);
+    setValue(event.target.value);
   };
 
   let options = [

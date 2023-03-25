@@ -50,7 +50,6 @@ export const ButtonNewRelationship: React.FC = () => {
 
   const handleFormSubmit = (s: string) => {
     console.log("inside form submit");
-    setIsOpen(false);
     dispatch(handleSetNewRelationshipLabel(s));
   };
 
@@ -68,7 +67,7 @@ export const ButtonNewRelationship: React.FC = () => {
 
       <Modal isOpen={isOpen} onClose={onClose} isCentered={true}>
         <ModalOverlay />
-        <ModalContent p={3}>
+        <ModalContent>
           <ModalHeader>Select a relationship label</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -78,6 +77,11 @@ export const ButtonNewRelationship: React.FC = () => {
               setValue={handleFormSubmit}
             />
           </ModalBody>
+          <ModalFooter justifyContent="flex-end">
+            <Button onClick={onClose} width={"10em"}>
+              Submit
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </>
